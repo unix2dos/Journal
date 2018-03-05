@@ -110,3 +110,36 @@ tags:
 		c.String(200, "pong")
 	})
 ```
+
+
+#### 5. model bind
+
+1. 绑定依赖于 Content-Type header
++ Bind, BindJSON, BindQuery 如果出错是400
+
+```
+	r.POST("/login_json", func(c *gin.Context) {
+		var json LOGIN
+		c.BindJSON(&json)
+	
+		//如果上面出错了, 现在401错误也是400
+		if json.Name == "liuwei" && json.Pass == "1" {
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauth"})
+		}
+	})
+	
+	//{"name":"liuwei","pass":"12"}
+```
+
++ ShouldBind, ShouldBindJSON, ShouldBindQuery 出错,开发者处理
+
+
+
+
+
+
+
+
+

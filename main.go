@@ -5,10 +5,15 @@ import (
 
 	"io"
 
-	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+type LOGIN struct {
+	Name string `form:"name" json:"name" binding:"required"`
+	Pass string `form:"pass" json:"pass" binding:"required"`
+}
 
 func main() {
 
@@ -18,9 +23,20 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	r.GET("/ping", func(c *gin.Context) {
-		log.Println("haha")
-		c.String(200, "pong")
+
+	r.POST("/login_json", func(c *gin.Context) {
+		var json LOGIN
+		c.BindJSON(&json)
+
+		if json.Name == "liuwei" && json.Pass == "1" {
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauth"})
+		}
+	})
+
+	r.POST("/login_form", func(c *gin.Context) {
+
 	})
 
 	r.Run() // listen and serve on 0.0.0.0:8080
