@@ -9,7 +9,7 @@ type Data struct {
 func NewData() *Data {
 	d := &Data{}
 	d.Ret = Success
-	GetDataMsg(d, d.Ret)
+	d.Msg = ""
 	d.Data = make(map[string]interface{})
 	return d
 }

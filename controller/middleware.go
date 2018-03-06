@@ -12,6 +12,7 @@ func CommonReturn(c *gin.Context) {
 	c.Next() //把hanlder里面的东西执行完了
 
 	data := GetData(c)
+	data.Msg = model.GetDataMsg(data.Ret)
 
 	if data.Ret == model.Success {
 		c.JSON(http.StatusOK, data)

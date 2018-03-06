@@ -3,8 +3,6 @@ package model
 const (
 	Success   = 0
 	ErrorArgs = iota
-	ErrorSignUp
-	ErrorLogin
 )
 
 var e = map[int]string{
@@ -12,9 +10,9 @@ var e = map[int]string{
 	ErrorArgs: "参数错误",
 }
 
-func GetDataMsg(data *Data, code int) {
-	data.Ret = code
-	if s, ok := e[code]; ok {
-		data.Msg = s
+func GetDataMsg(code int) string {
+	if str, ok := e[code]; ok {
+		return str
 	}
+	return ""
 }
