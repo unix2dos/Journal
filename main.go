@@ -6,6 +6,8 @@ import (
 	"Journal/model"
 	"Journal/utils"
 
+	"Journal/service"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +17,9 @@ func init() {
 	configs := make(map[string]interface{})
 	configs["./conf/config_test.json"] = model.AppConfig
 	utils.ParseConfigs(configs)
+
+	//sql
+	service.SInit()
 }
 
 func main() {

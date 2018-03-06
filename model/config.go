@@ -1,5 +1,6 @@
 package model
 
 type config struct {
-	RunPort string
+	RunPort  string
+	MysqlDsn string
 }

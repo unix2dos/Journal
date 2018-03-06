@@ -1,3 +1,4 @@
 {
-  "RunPort": ":8080"
+  "RunPort": ":8080",
+  "MysqlDsn" :"root:123456@tcp(127.0.0.1:3306)/journal?timeout=3s&parseTime=true&loc=Local&charset=utf8"
 }
