@@ -1,7 +1,5 @@
 package model
 
-import "reading-friends-api/model"
-
 const (
 	Success   = 0
 	ErrorArgs = iota
@@ -14,7 +12,7 @@ var e = map[int]string{
 	ErrorArgs: "参数错误",
 }
 
-func GetErrMsg(data *model.Data, code int) {
+func GetDataMsg(data *Data, code int) {
 	data.Ret = code
 	if s, ok := e[code]; ok {
 		data.Msg = s
