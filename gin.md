@@ -134,8 +134,67 @@ tags:
 ```
 
 + ShouldBind, ShouldBindJSON, ShouldBindQuery 出错,开发者处理
++ BindQuery 只能绑定get, 不能绑定post数据 
++ Bind()是可以bind Query String和 post data
 
 
+#### 6. return data
+
+	c.String
+	c.JSON
+	c.XML
+	c.YAML
+
+#### 7. custom middleware
+
+```
+func Logger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := time.Now()
+		c.Set("name", "liuwei")
+		log.Print(t)
+
+		c.Next()//此处前是请求前, 后面是请求后, 功能是相当于提前执行了handlers
+
+		t1 := time.Since(t)
+		log.Print(t1)
+
+		status := c.Writer.Status()
+		log.Println(status)
+	}
+}
+```
+
+#### 8. BasicAuth授权
+
+```
+	group := r.Group("/admin", gin.BasicAuth(gin.Accounts{
+		"foo":  "bar",
+		"name": "liuwei",
+	}))
+	group.GET("/secrets", func(c *gin.Context) {
+		user := c.MustGet(gin.AuthUserKey).(string)
+		log.Println(user)
+	})
+```
+
+#### 9. gin.Context Groutines
+
+如果用groutines需要copy, 不copy什么后果?
+
+```
+	r.GET("/long_async", func(c *gin.Context) {
+		// create copy to be used inside the goroutine
+		cCp := c.Copy()
+		go func() {
+			// simulate a long task with time.Sleep(). 5 seconds
+			time.Sleep(5 * time.Second)
+
+			// note that you are using the copied context "cCp", IMPORTANT
+			log.Println("Done! in path " + cCp.Request.URL.Path)
+		}()
+	})
+```
 
 
 
