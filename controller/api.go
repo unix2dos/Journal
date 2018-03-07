@@ -2,8 +2,7 @@ package controller
 
 import (
 	"Journal/model"
-
-	"log"
+	"Journal/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,15 +14,24 @@ func Signup(c *gin.Context) {
 	data := NewSetData(c)
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
-		log.Println(err)
 		return
 	}
 
 	// TODO:验证输入合法
 
 	// 检测是否注册
-	log.Println(args.Email)
-	//service.MysqlEngine.Where("email=?", args.Email)
+	user := new(model.User)
+	//exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
+	//if exist {
+	//	data.Ret = model.ErrorSignUp
+	//	return
+	//}
+
+	// 存续到数据库
+	user.Alias = args.Alias
+	user.Email = args.Email
+	user.Password = args.Password
+	service.MysqlEngine.Insert(user)
 
 }
 

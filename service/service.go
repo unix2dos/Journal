@@ -31,10 +31,11 @@ func SqlInit() {
 }
 
 func ConnectDB(conn string) (err error) {
-	MysqlEngine, err := xorm.NewEngine("mysql", conn)
+	MysqlEngine, err = xorm.NewEngine("mysql", conn)
 	if err != nil {
 		return
 	}
-	MysqlEngine.Sync(new(model.User))
+	MysqlEngine.Sync2(new(model.User))
+	MysqlEngine.ShowSQL(true)
 	return
 }
