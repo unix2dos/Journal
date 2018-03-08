@@ -3,19 +3,25 @@ package service
 import (
 	"Journal/model"
 
-	"github.com/Sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	"github.com/zheng-ji/goSnowFlake"
 )
 
 var (
 	MysqlEngine *xorm.Engine
-	Log         *logrus.Entry
+	SnowFlake   *goSnowFlake.IdWorker
 )
 
 func SInit() {
 	LogInit()
 	SqlInit()
+
+	var err error
+	SnowFlake, err = goSnowFlake.NewIdWorker(1)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func LogInit() {
@@ -24,13 +30,13 @@ func LogInit() {
 
 func SqlInit() {
 	var err error
-	err = ConnectDB(model.AppConfig.MysqlDsn)
+	err = ConnectMysql(model.AppConfig.MysqlDsn)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func ConnectDB(conn string) (err error) {
+func ConnectMysql(conn string) (err error) {
 	MysqlEngine, err = xorm.NewEngine("mysql", conn)
 	if err != nil {
 		return
@@ -38,4 +44,12 @@ func ConnectDB(conn string) (err error) {
 	MysqlEngine.Sync2(new(model.User))
 	MysqlEngine.ShowSQL(true)
 	return
+}
+
+func GetSnowFlakeId() int64 {
+	id, err := SnowFlake.NextId()
+	if err != nil {
+		panic(err)
+	}
+	return id
 }

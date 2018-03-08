@@ -18,7 +18,7 @@ func init() {
 	configs["./conf/config_test.json"] = model.AppConfig
 	utils.ParseConfigs(configs)
 
-	//sql log
+	//init
 	service.SInit()
 }
 

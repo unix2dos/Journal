@@ -4,14 +4,19 @@ import (
 	"Journal/model"
 	"Journal/service"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
+func GetInfo(c *gin.Context) {
+
+}
+
 func Signup(c *gin.Context) {
 
-	args := new(model.SignUpArgs)
+	data := GetData(c)
 
-	data := NewSetData(c)
+	args := new(model.SignUpArgs)
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
 		return
@@ -21,20 +26,54 @@ func Signup(c *gin.Context) {
 
 	// 检测是否注册
 	user := new(model.User)
-	//exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
-	//if exist {
-	//	data.Ret = model.ErrorSignUp
-	//	return
-	//}
+	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
+	if exist {
+		data.Ret = model.ErrorRepeatSignUp
+		return
+	}
 
-	// 存续到数据库
+	// 存续到数据库 TODO: 存储到redis
+	user.Id = service.GetSnowFlakeId()
 	user.Alias = args.Alias
 	user.Email = args.Email
 	user.Password = args.Password
 	service.MysqlEngine.Insert(user)
 
+	// 存储session
+	c.Set("uid", user.Id)
+	SessionSave(c)
 }
 
 func Login(c *gin.Context) {
 
+	data := GetData(c)
+
+	args := new(model.LoginArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		return
+	}
+
+	user := new(model.User)
+	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
+	if !exist {
+		data.Ret = model.ErrorUserPassWord
+		return
+	}
+
+	if user.Password != args.Password {
+		data.Ret = model.ErrorUserPassWord
+		return
+	}
+
+	// 存储session
+	c.Set("uid", user.Id)
+	SessionSave(c)
+}
+
+func SessionSave(c *gin.Context) {
+	useId, _ := c.Get("uid")
+	session := sessions.Default(c)
+	session.Set("uid", useId)
+	session.Save()
 }

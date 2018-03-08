@@ -11,11 +11,11 @@ func GetData(c *gin.Context) *model.Data {
 	if exist {
 		return data.(*model.Data)
 	} else {
-		return model.NewData()
+		return SetNewData(c)
 	}
 }
 
-func NewSetData(c *gin.Context) *model.Data {
+func SetNewData(c *gin.Context) *model.Data {
 	data := model.NewData()
 	c.Set("data", data)
 	return data
