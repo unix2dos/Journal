@@ -1,44 +1,48 @@
-结合“好鱼丸.pdf” 中的接口, 调整夏雨2018-01-24时的backend/app.py. 尚未测试。
-server 地址暂定journalex.us:5000
+### RetCode
 
-# Codes as outlined in the current frontend/backend communication document
+```
+	Success    = 0
+	ErrorServe = iota
+	ErrorArgs
+	ErrorNotLogin
+	ErrorRepeatSignUp
+	ErrorUserPassWord
+```
 
-CODE_SUCCESS = '0'
-CODE_ERR_EMAIL = '1001'
-CODE_ERR_EMAIL_PASS_NULL = '1002'
-CODE_ERR_EMAIL_PASS_WRONG = '1003'
-CODE_ERR_EMAIL_TAKEN = '1004'
-CODE_ERR_EMAIL_NOT_FOUND = '1005'
-CODE_ERR_VERIFICATION = '1006'
-CODE_ERR_VALIDATION = '1007'
-CODE_ERR_NOTLOGGEDIN = '1008'
-CODE_ERR_USRNAMETAKEN = '1009'
-CODE_ERR_BADINVITECODE = '1010'
-
-
-CODE_ERR_DB = '2001'
-CODE_ERR_INTERNAL = '2002'
-CODE_ERR_ALREADYLOGIN = '2003'
-
-
-# Only the msg associated with the error codes that are currently used
-MSG_SUCCESS = 'Request Succeeded'
-MSG_ERR_EMAIL_PASS_NULL = 'Username/Password cannot be empty'
-MSG_ERR_EMAIL_PASS_WRONG = 'Username/Password is incorrect'
-MSG_ERR_VALIDATION = 'Did not pass validator tests.'
-MSG_ERR_NOTLOGGEDIN = 'Not logged in.'
-MSG_ERR_ALREADYLOGIN = 'Internal Error: an already logged in session is directed to sign-up page'
-MSG_ERR_USRNAMETAKEN = 'Username already taken'
-MSG_ERR_BADINVITECODE = 'Bad Invitation Code'
-
-
+### 返回统一结构
 所有return 结构均为：
-{
-            'ret': CODE_******,
-            'msg': MSG_*******,
-            'data': ******** （不同functions 不一样）
- }
 
+```
+	{
+		'ret': RetCode,
+		'msg': "对应RetCode",
+		'data': {} （不同接口不一样）
+	 }
+```
+
+
+
+
+## API
+
+###  /getinfo 获取用户信息 GET
+
+
+
+###  /signup 注册 POST
+
+字段|说明|
+---|---|---
+alias| 昵称
+email| 邮箱
+password| 密码
+
+###  /login 登录 POST
+
+字段|说明|
+---|---|---
+email | 邮箱
+password| 密码
 
 
 
@@ -84,28 +88,11 @@ content为一个json对象，目前的结构为
 
 
 
-三. /getinfo
-Method: Get 
-Success:
-接口返回数据和login一样
-
-
-四. /logout
-Method: Get
-Success:
-Return to /login page
 
 
 
-五. /signup
-Method: Post (username, password,alias)
-Success:
-{
-              'ret': CODE_SUCCESS,
-              'msg': MSG_SUCCESS,
-              'data': data_dict
-            }
-data_dict 同二。
+
+
 
 
 七. /journal/list/public={-1,0,1} 

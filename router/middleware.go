@@ -10,9 +10,43 @@ import (
 	"fmt"
 	"time"
 
+	"log"
+
+	"io/ioutil"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
+
+func ClientRequestLog(c *gin.Context) {
+
+	log.Println("-----------------")
+	log.Println(c.Request.Method + " " + c.Request.RequestURI)
+	log.Println("\n")
+	for k, v := range c.Request.Header {
+		log.Println(k, v)
+	}
+	log.Println("\n")
+	bytes, _ := ioutil.ReadAll(c.Request.Body)
+	log.Println(string(bytes))
+	log.Println("-----------------")
+}
+
+func ClientResponseLog(c *gin.Context) {
+	c.Next()
+
+	log.Println("+++++++++++++++++")
+	log.Println(c.Request.Method + " " + c.Request.RequestURI)
+
+	for k, v := range c.Writer.Header() {
+		log.Println(k, v)
+	}
+
+	////c.Request.Body
+	//bytes, _ := ioutil.ReadAll(c.Writer)
+	//log.Println(string(bytes))
+	log.Println("+++++++++++++++++")
+}
 
 func SessionFilter(c *gin.Context) {
 	//siginup和login不经过
@@ -26,7 +60,7 @@ func SessionFilter(c *gin.Context) {
 	userId, ok := session.Get("uid").(int64)
 	if !ok {
 		data.Ret = model.ErrorNotLogin
-		//c.Abort() //TODO: 什么时候加, 不加出事吗
+		c.Abort()
 		return
 	}
 
@@ -34,7 +68,7 @@ func SessionFilter(c *gin.Context) {
 	exist, err := service.MysqlEngine.Id(userId).Get(user)
 	if err != nil {
 		data.Ret = model.ErrorServe
-		//c.Abort() //TODO: 什么时候加, 不加出事吗
+		c.Abort()
 		return
 	}
 
@@ -50,7 +84,7 @@ func SessionFilter(c *gin.Context) {
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
-
+	log.Println("CommonReturn")
 	data := controller.GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
 
