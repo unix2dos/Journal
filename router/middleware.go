@@ -14,6 +14,8 @@ import (
 
 	"io/ioutil"
 
+	"encoding/json"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +23,10 @@ import (
 func ClientRequestLog(c *gin.Context) {
 
 	log.Println("-----------------")
-	log.Println(c.Request.Method + " " + c.Request.RequestURI)
-	log.Println("\n")
+	log.Println("Request " + c.Request.Method + " " + c.Request.RequestURI)
 	for k, v := range c.Request.Header {
 		log.Println(k, v)
 	}
-	log.Println("\n")
 	bytes, _ := ioutil.ReadAll(c.Request.Body)
 	log.Println(string(bytes))
 	log.Println("-----------------")
@@ -34,17 +34,14 @@ func ClientRequestLog(c *gin.Context) {
 
 func ClientResponseLog(c *gin.Context) {
 	c.Next()
-
 	log.Println("+++++++++++++++++")
-	log.Println(c.Request.Method + " " + c.Request.RequestURI)
-
+	log.Println("Response " + c.Request.Method + " " + c.Request.RequestURI)
 	for k, v := range c.Writer.Header() {
 		log.Println(k, v)
 	}
-
-	////c.Request.Body
-	//bytes, _ := ioutil.ReadAll(c.Writer)
-	//log.Println(string(bytes))
+	v, _ := c.Get("data")
+	bytes, _ := json.Marshal(v)
+	log.Println(string(bytes))
 	log.Println("+++++++++++++++++")
 }
 
@@ -84,7 +81,6 @@ func SessionFilter(c *gin.Context) {
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
-	log.Println("CommonReturn")
 	data := controller.GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
 
