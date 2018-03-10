@@ -1,3 +1,7 @@
+### TODO
+1. redis type
+2. read all
+
 ### RetCode
 
 ```

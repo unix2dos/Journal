@@ -4,3 +4,9 @@ package model
 var (
 	AppConfig = &config{}
 )
+
+//redis key
+var (
+	RedisKeyPrefix string = "journal"
+	RedisKeyUser   string = RedisKeyPrefix + ":user:%d"
+)

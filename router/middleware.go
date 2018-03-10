@@ -1,18 +1,15 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"Journal/controller"
 	"Journal/model"
 	"Journal/service"
 
-	"fmt"
-	"time"
-
 	"log"
-
-	"io/ioutil"
 
 	"encoding/json"
 
@@ -22,19 +19,21 @@ import (
 
 func ClientRequestLog(c *gin.Context) {
 
-	log.Println("-----------------")
+	log.Println("----------------------------------------")
 	log.Println("Request " + c.Request.Method + " " + c.Request.RequestURI)
 	for k, v := range c.Request.Header {
 		log.Println(k, v)
 	}
-	bytes, _ := ioutil.ReadAll(c.Request.Body)
-	log.Println(string(bytes))
-	log.Println("-----------------")
+
+	//bytes, _ := ioutil.ReadAll(c.Request.Body)
+	//log.Println(string(bytes))//TODO: fuck
+
+	log.Println("----------------------------------------")
 }
 
 func ClientResponseLog(c *gin.Context) {
 	c.Next()
-	log.Println("+++++++++++++++++")
+	log.Println("++++++++++++++++++++++++++++++++++++++++")
 	log.Println("Response " + c.Request.Method + " " + c.Request.RequestURI)
 	for k, v := range c.Writer.Header() {
 		log.Println(k, v)
@@ -42,7 +41,7 @@ func ClientResponseLog(c *gin.Context) {
 	v, _ := c.Get("data")
 	bytes, _ := json.Marshal(v)
 	log.Println(string(bytes))
-	log.Println("+++++++++++++++++")
+	log.Println("++++++++++++++++++++++++++++++++++++++++")
 }
 
 func SessionFilter(c *gin.Context) {
@@ -51,6 +50,7 @@ func SessionFilter(c *gin.Context) {
 		return
 	}
 
+	log.Println("SessionFilter")
 	data := controller.GetData(c)
 
 	session := sessions.Default(c)
@@ -69,20 +69,21 @@ func SessionFilter(c *gin.Context) {
 		return
 	}
 
-	if !exist {
-		//TODO: 无效cookie
+	if !exist { //cookie无效
+		data.Ret = model.ErrorNotLogin
+		c.Abort()
+		return
 	}
-
-	data.Data["user"] = user
-	data.Data["ts"] = fmt.Sprintf("%d", time.Now().Unix())
 	c.Set("uid", user.Id)
-
+	data.Data["user"] = user //TODO: 如果写到这里, user信息变了, 可能还是老数据
 }
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
+	log.Println("CommonReturn")
 	data := controller.GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
+	data.Data["ts"] = fmt.Sprintf("%d", time.Now().Unix())
 
 	if data.Ret == model.Success {
 		c.JSON(http.StatusOK, data)

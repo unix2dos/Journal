@@ -11,6 +11,7 @@ const (
 
 var e = map[int]string{
 	Success:           "success",
+	ErrorServe:        "serve error",
 	ErrorArgs:         "error args",
 	ErrorNotLogin:     "not login",
 	ErrorRepeatSignUp: "email has sign up",

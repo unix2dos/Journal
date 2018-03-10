@@ -4,6 +4,10 @@ import (
 	"Journal/model"
 	"Journal/service"
 
+	"fmt"
+
+	"log"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +22,7 @@ func Signup(c *gin.Context) {
 
 	args := new(model.SignUpArgs)
 	if err := c.BindJSON(args); err != nil {
+		log.Println("err:", err)
 		data.Ret = model.ErrorArgs
 		return
 	}
@@ -32,16 +37,38 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	// 存续到数据库 TODO: 存储到redis
+	// 存续到数据库 redis
 	user.Id = service.GetSnowFlakeId()
 	user.Alias = args.Alias
 	user.Email = args.Email
 	user.Password = args.Password
-	service.MysqlEngine.Insert(user)
+	SaveDB(user)
 
 	// 存储session
 	c.Set("uid", user.Id)
 	SessionSave(c)
+}
+
+func SaveDB(user *model.User) (err error) {
+	session := service.MysqlEngine.NewSession()
+	session.Begin()
+	defer func() {
+		if err == nil {
+			session.Commit()
+		} else {
+			session.Rollback()
+		}
+		session.Close()
+	}()
+
+	_, err = session.Insert(user)
+	if err != nil {
+		return
+	}
+
+	key := fmt.Sprintf(model.RedisKeyUser, user.Id)
+	err = service.RedisStore.Set(key, user, 0)
+	return
 }
 
 func Login(c *gin.Context) {
