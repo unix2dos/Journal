@@ -26,7 +26,7 @@ func ClientRequestLog(c *gin.Context) {
 	}
 
 	//bytes, _ := ioutil.ReadAll(c.Request.Body)
-	//log.Println(string(bytes))//TODO: fuck
+	//log.Println(string(bytes))//TODO: fuck, 验证6-8bug
 
 	log.Println("----------------------------------------")
 }
