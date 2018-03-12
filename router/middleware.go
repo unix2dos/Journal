@@ -9,8 +9,6 @@ import (
 	"Journal/model"
 	"Journal/service"
 
-	"log"
-
 	"encoding/json"
 
 	"github.com/gin-contrib/sessions"
@@ -19,29 +17,27 @@ import (
 
 func ClientRequestLog(c *gin.Context) {
 
-	log.Println("----------------------------------------")
-	log.Println("Request " + c.Request.Method + " " + c.Request.RequestURI)
+	service.Logs.Debug("----------------------------------------")
+	service.Logs.Debug("Request " + c.Request.Method + " " + c.Request.RequestURI)
 	for k, v := range c.Request.Header {
-		log.Println(k, v)
+		service.Logs.Debug(k, v)
 	}
-
 	//bytes, _ := ioutil.ReadAll(c.Request.Body)
-	//log.Println(string(bytes))//TODO: fuck, 验证6-8bug
-
-	log.Println("----------------------------------------")
+	//log.Println(string(bytes))//TODO: fuck
+	service.Logs.Debug("----------------------------------------")
 }
 
 func ClientResponseLog(c *gin.Context) {
 	c.Next()
-	log.Println("++++++++++++++++++++++++++++++++++++++++")
-	log.Println("Response " + c.Request.Method + " " + c.Request.RequestURI)
+	service.Logs.Debug("++++++++++++++++++++++++++++++++++++++++")
+	service.Logs.Debug("Response " + c.Request.Method + " " + c.Request.RequestURI)
 	for k, v := range c.Writer.Header() {
-		log.Println(k, v)
+		service.Logs.Debug(k, v)
 	}
 	v, _ := c.Get("data")
 	bytes, _ := json.Marshal(v)
-	log.Println(string(bytes))
-	log.Println("++++++++++++++++++++++++++++++++++++++++")
+	service.Logs.Debug(string(bytes))
+	service.Logs.Debug("++++++++++++++++++++++++++++++++++++++++")
 }
 
 func SessionFilter(c *gin.Context) {
@@ -49,8 +45,6 @@ func SessionFilter(c *gin.Context) {
 	if c.Request.RequestURI == "/signup" || c.Request.RequestURI == "/login" {
 		return
 	}
-
-	log.Println("SessionFilter")
 	data := controller.GetData(c)
 
 	session := sessions.Default(c)
@@ -80,7 +74,6 @@ func SessionFilter(c *gin.Context) {
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
-	log.Println("CommonReturn")
 	data := controller.GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
 	data.Data["ts"] = fmt.Sprintf("%d", time.Now().Unix())
