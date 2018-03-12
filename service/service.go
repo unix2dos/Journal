@@ -2,7 +2,9 @@ package service
 
 import (
 	"Journal/model"
-	"os"
+	"io/ioutil"
+
+	"Journal/utils"
 
 	"github.com/gin-gonic/contrib/cache"
 	_ "github.com/go-sql-driver/mysql"
@@ -32,15 +34,16 @@ func SInit() {
 }
 
 func LogInit() {
+	logs := logrus.New()
+	logs.Out = ioutil.Discard
+	logs.Level = logrus.DebugLevel
+	logs.Formatter = &logrus.TextFormatter{FullTimestamp: true}
 
-	file, err := os.OpenFile("logs/main.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	hook, err := utils.CreateFileHook()
 	if err != nil {
 		panic(err)
 	}
-	logs := logrus.New()
-	logs.Out = file
-	logs.Level = logrus.DebugLevel
-	logs.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	logs.Hooks.Add(hook)
 	Logs = logs.WithField("MODULE", "API")
 }
 

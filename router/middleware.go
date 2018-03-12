@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -8,36 +9,46 @@ import (
 	"Journal/controller"
 	"Journal/model"
 	"Journal/service"
-
-	"encoding/json"
+	"Journal/utils"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func ClientRequestLog(c *gin.Context) {
-
-	service.Logs.Debug("----------------------------------------")
-	service.Logs.Debug("Request " + c.Request.Method + " " + c.Request.RequestURI)
+	var header string
 	for k, v := range c.Request.Header {
-		service.Logs.Debug(k, v)
+		header += k
+		for _, vv := range v {
+			header += vv + " "
+		}
 	}
-	//bytes, _ := ioutil.ReadAll(c.Request.Body)
-	//log.Println(string(bytes))//TODO: fuck
-	service.Logs.Debug("----------------------------------------")
+
+	////bytes, _ := ioutil.ReadAll(c.Request.Body)
+	////log.Println(string(bytes))//TODO: fuck
+	service.Logs.Debug(c.Request.Method, " ", c.Request.RequestURI, " ", header)
+
 }
 
 func ClientResponseLog(c *gin.Context) {
+	start := time.Now()
 	c.Next()
-	service.Logs.Debug("++++++++++++++++++++++++++++++++++++++++")
-	service.Logs.Debug("Response " + c.Request.Method + " " + c.Request.RequestURI)
-	for k, v := range c.Writer.Header() {
-		service.Logs.Debug(k, v)
-	}
+
+	latency := time.Since(start)
+	clientIP := c.ClientIP()
+	method := c.Request.Method
+	statusCode := c.Writer.Status()
+	statusColor := utils.ColorForStatus(statusCode)
+	methodColor := utils.ColorForMethod(method)
+
 	v, _ := c.Get("data")
 	bytes, _ := json.Marshal(v)
-	service.Logs.Debug(string(bytes))
-	service.Logs.Debug("++++++++++++++++++++++++++++++++++++++++")
+
+	service.Logs.Debug(statusColor, statusCode, " ",
+		utils.Reset, latency, " ", clientIP, " ",
+		methodColor, method, " ",
+		utils.Reset, c.Request.RequestURI, " ", string(bytes),
+	)
 }
 
 func SessionFilter(c *gin.Context) {
