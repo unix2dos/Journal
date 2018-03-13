@@ -17,10 +17,10 @@ func Route(r *gin.Engine) {
 	r.Use(sessions.Sessions("journal", store))
 
 	//中间件顺序不要变
-	r.Use(RequestLog)
-	r.Use(CommonReturn)
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(RequestLog)
+	r.Use(CommonReturn)
 	r.Use(SessionFilter)
 
 	r.GET("/getinfo", controller.GetInfo)

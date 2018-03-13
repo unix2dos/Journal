@@ -13,7 +13,6 @@ import (
 )
 
 func GetInfo(c *gin.Context) {
-
 }
 
 func Signup(c *gin.Context) {
@@ -42,33 +41,11 @@ func Signup(c *gin.Context) {
 	user.Alias = args.Alias
 	user.Email = args.Email
 	user.Password = args.Password
-	SaveDB(user)
+	UserSaveDB(user)
 
 	// 存储session
 	c.Set("uid", user.Id)
 	SessionSave(c)
-}
-
-func SaveDB(user *model.User) (err error) {
-	session := service.MysqlEngine.NewSession()
-	session.Begin()
-	defer func() {
-		if err == nil {
-			session.Commit()
-		} else {
-			session.Rollback()
-		}
-		session.Close()
-	}()
-
-	_, err = session.Insert(user)
-	if err != nil {
-		return
-	}
-
-	key := fmt.Sprintf(model.RedisKeyUser, user.Id)
-	err = service.RedisStore.HMSet(key, user)
-	return
 }
 
 func Login(c *gin.Context) {
@@ -103,4 +80,26 @@ func SessionSave(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Set("uid", useId)
 	session.Save()
+}
+
+func UserSaveDB(user *model.User) (err error) {
+	session := service.MysqlEngine.NewSession()
+	session.Begin()
+	defer func() {
+		if err == nil {
+			session.Commit()
+		} else {
+			session.Rollback()
+		}
+		session.Close()
+	}()
+
+	_, err = session.Insert(user)
+	if err != nil {
+		return
+	}
+
+	key := fmt.Sprintf(model.RedisKeyUser, user.Id)
+	err = service.RedisStore.HMSet(key, user)
+	return
 }

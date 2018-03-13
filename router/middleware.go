@@ -63,7 +63,7 @@ func SessionFilter(c *gin.Context) {
 		return
 	}
 	c.Set("uid", user.Id)
-	data.Data["user"] = user //TODO: 如果写到这里, user信息变了, 可能还是老数据
+	data.Data["user"] = user //TODO: 如果写到这里, user信息变了, 可能还是老数据, 如果写到commonReturn里呢??
 }
 
 func CommonReturn(c *gin.Context) {
