@@ -6,7 +6,6 @@ import (
 
 	"Journal/utils"
 
-	"github.com/gin-gonic/contrib/cache"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
@@ -15,9 +14,9 @@ import (
 
 var (
 	MysqlEngine *xorm.Engine
-	RedisStore  *cache.RedisStore
+	RedisStore  *utils.RedisStore
 	SnowFlake   *goSnowFlake.IdWorker
-	Logs        *logrus.Entry
+	Logs        *logrus.Logger
 )
 
 func SInit() {
@@ -34,17 +33,16 @@ func SInit() {
 }
 
 func LogInit() {
-	logs := logrus.New()
-	logs.Out = ioutil.Discard
-	logs.Level = logrus.DebugLevel
-	logs.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	Logs = logrus.New()
+	Logs.Out = ioutil.Discard
+	Logs.Level = logrus.DebugLevel
+	Logs.Formatter = &logrus.TextFormatter{ForceColors: true, DisableTimestamp: true}
 
 	hook, err := utils.CreateFileHook()
 	if err != nil {
 		panic(err)
 	}
-	logs.Hooks.Add(hook)
-	Logs = logs.WithField("MODULE", "API")
+	Logs.Hooks.Add(hook)
 }
 
 func SqlInit() {
@@ -61,7 +59,7 @@ func SqlInit() {
 }
 
 func ConnectRedis() (err error) {
-	RedisStore = cache.NewRedisCache(model.AppConfig.RedisHost, model.AppConfig.RedisAuth, cache.DEFAULT)
+	RedisStore = utils.NewRedisStore(model.AppConfig.RedisHost, model.AppConfig.RedisAuth)
 	return
 }
 

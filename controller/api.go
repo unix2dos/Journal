@@ -67,7 +67,8 @@ func SaveDB(user *model.User) (err error) {
 	}
 
 	key := fmt.Sprintf(model.RedisKeyUser, user.Id)
-	err = service.RedisStore.Set(key, user, 0)
+	err = service.RedisStore.Set(key, user)
+
 	return
 }
 
