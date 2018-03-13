@@ -102,3 +102,177 @@ User-Agent: PostmanRuntime/7.1.1
 
 {"alias": "liuwei", "email": "5@qq.com", "password": "1"} 
 response=| status=500 ip=::1 duration=9.90403ms data={"ret":4,"msg":"email has sign up","data":{"ts":"1520934445"}} 
+[info][20:01:48][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDkyMTkzM3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fEvH4pEWGk1alGWQ0OLmY2xoGsc_lhabUSJl052u1OWt
+Postman-Token: 703045c1-31dd-4da1-9231-e8534da05a53
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "5@qq.com", "password": "1"} 
+response=| status=500 ip=::1 duration=1.27819ms data={"ret":4,"msg":"email has sign up","data":{"ts":"1520942508"}} 
+[info][20:01:59][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDkyMTkzM3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fEvH4pEWGk1alGWQ0OLmY2xoGsc_lhabUSJl052u1OWt
+Postman-Token: 04823758-768f-4c5d-b466-39c7873f634d
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "5@qq.com", "password": "1"} 
+response=| status=500 ip=::1 duration=817.932µs data={"ret":4,"msg":"email has sign up","data":{"ts":"1520942519"}} 
+[info][20:02:12][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDkyMTkzM3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fEvH4pEWGk1alGWQ0OLmY2xoGsc_lhabUSJl052u1OWt
+Postman-Token: 560532f4-f869-4d74-96cb-09a1754df154
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "6@qq.com", "password": "1"} 
+response=| status=200 ip=::1 duration=9.385021ms data={"ret":0,"msg":"success","data":{"ts":"1520942532"}} 
+[info][20:02:38][logger.go:126]: MODULE=API|  request=| GET /getinfo HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: journal=MTUyMDk0MjUzMnxOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fELnLxccNnDx5c1zaRBu83pOPOmSMJKo0G3KHtivJr8f
+Postman-Token: ae0bee25-afee-46c7-a47a-1652500536e4
+User-Agent: PostmanRuntime/7.1.1
+
+ 
+response=| status=500 ip=::1 duration=1.784676ms data={"ret":3,"msg":"not login","data":{"ts":"1520942558"}} 
+[info][20:02:40][logger.go:126]: MODULE=API|  request=| GET /getinfo HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: journal=MTUyMDk0MjUzMnxOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fELnLxccNnDx5c1zaRBu83pOPOmSMJKo0G3KHtivJr8f
+Postman-Token: 459dfd5c-f9b2-4c39-9085-fb342af6bb1f
+User-Agent: PostmanRuntime/7.1.1
+
+ 
+response=| status=500 ip=::1 duration=3.237921ms data={"ret":3,"msg":"not login","data":{"ts":"1520942560"}} 
+[info][20:02:50][logger.go:126]: MODULE=API|  request=| GET /getinfo HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: journal=MTUyMDk0MjUzMnxOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fELnLxccNnDx5c1zaRBu83pOPOmSMJKo0G3KHtivJr8f
+Postman-Token: 636c8051-03cf-497f-a95d-960176161222
+User-Agent: PostmanRuntime/7.1.1
+
+ 
+response=| status=500 ip=::1 duration=912.162µs data={"ret":3,"msg":"not login","data":{"ts":"1520942570"}} 
+[info][20:02:50][logger.go:126]: MODULE=API|  request=| GET /getinfo HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: journal=MTUyMDk0MjUzMnxOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fELnLxccNnDx5c1zaRBu83pOPOmSMJKo0G3KHtivJr8f
+Postman-Token: 25d13e66-3de5-4bf0-adcb-25c897e23491
+User-Agent: PostmanRuntime/7.1.1
+
+ 
+response=| status=500 ip=::1 duration=3.258955ms data={"ret":3,"msg":"not login","data":{"ts":"1520942570"}} 
+[info][20:03:23][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDk0MjUzMnxOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fELnLxccNnDx5c1zaRBu83pOPOmSMJKo0G3KHtivJr8f
+Postman-Token: 3dfd4a54-1472-4a3a-8112-2c63125fbf58
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "7@qq.com", "password": "1"} 
+response=| status=200 ip=::1 duration=3.78448ms data={"ret":0,"msg":"success","data":{"ts":"1520942603"}} 
+[info][20:04:21][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDk0MjYwM3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fPm28QNqrLl_5DQo2EWbcCigEL7tmKHfmm3t0q_6zvKY
+Postman-Token: 9eadd9a6-219c-40e6-a941-782b12ee4dd5
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "7@qq.com", "password": "1"} 
+response=| status=200 ip=::1 duration=3.944788ms data={"ret":0,"msg":"success","data":{"ts":"1520942661"}} 
+[info][20:06:47][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDk0MjY2MXxOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fA02K0WwSTUTKNy7D3P-JXkQtBPs2z4xFahT_1M11oHu
+Postman-Token: 21d73e35-fd01-4091-b2bd-72f7b978d769
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "7@qq.com", "password": "1"} 
+response=| status=200 ip=::1 duration=28.942759ms data={"ret":0,"msg":"success","data":{"ts":"1520942807"}} 
+[info][20:26:23][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDk0MjgwN3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fF-YPORJF64XbORQtx0OoaBQXqP55Nz_9Lh-WBhwnJWl
+Postman-Token: 457fd5f0-27c6-4fb9-8862-e9c9f3562a41
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "7@qq.com", "password": "1"} 
+response=| status=500 ip=::1 duration=2.116776ms data={"ret":4,"msg":"email has sign up","data":{"ts":"1520943983"}} 
+[info][20:26:27][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDk0MjgwN3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fF-YPORJF64XbORQtx0OoaBQXqP55Nz_9Lh-WBhwnJWl
+Postman-Token: 37953267-b2bd-4c00-956c-da817f5ad03c
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "8@qq.com", "password": "1"} 
+response=| status=200 ip=::1 duration=6.784872ms data={"ret":0,"msg":"success","data":{"ts":"1520943987"}} 
+[info][20:28:00][logger.go:126]: MODULE=API|  request=| POST /signup HTTP/1.1
+Host: localhost:8080
+Accept: */*
+Accept-Encoding: gzip, deflate
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 57
+Content-Type: application/json
+Cookie: journal=MTUyMDk0Mzk4N3xOd3dBTkVzM1FUYzJWMHBaU2t0UFdFMUVVRkZNV1U5WFNEZE9XbFphTjBoWVZFaE9SbGxhU1ZoRFFWRTNWVk5HVDFWSFN6UTJSVkU9fEosMnmib-gJC-lVNPxtcmgj9Z0vqoNoQPmJjBACtFA1
+Postman-Token: 981b96a9-e88e-4a53-bad8-bc21ad0bf9e3
+User-Agent: PostmanRuntime/7.1.1
+
+{"alias": "liuwei", "email": "9@qq.com", "password": "1"} 
+response=| status=200 ip=::1 duration=5.783085ms data={"ret":0,"msg":"success","data":{"ts":"1520944080"}} 

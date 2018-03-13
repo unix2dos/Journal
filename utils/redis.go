@@ -74,3 +74,15 @@ func (c *RedisStore) Get(key string) (s string, err error) {
 	}
 	return
 }
+
+func (c *RedisStore) HMSet(key string, value interface{}) (err error) {
+	conn := c.redisPool.Get()
+	defer conn.Close()
+
+	_, err = conn.Do("HMSET", redis.Args{}.Add(key).AddFlat(value)...)
+	if err != nil {
+		return
+	}
+
+	return
+}

@@ -7,6 +7,6 @@ type User struct {
 	Alias    string    `json:"alias" xorm:"VARCHAR(50)"`
 	Email    string    `json:"email" xorm:"VARCHAR(50)"`
 	Password string    `json:"-" xorm:"VARCHAR(50)"`
-	Create   time.Time `json:"-" xorm:"created DATETIME"`
-	Update   time.Time `json:"-" xorm:"updated DATETIME"`
+	Create   time.Time `json:"-" redis:"-" xorm:"created DATETIME"`
+	Update   time.Time `json:"-" redis:"-" xorm:"updated DATETIME"`
 }
