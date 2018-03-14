@@ -1,16 +1,13 @@
-package router
+package controller
 
 import (
+	"Journal/model"
+	"Journal/service"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
-
-	"Journal/controller"
-	"Journal/model"
-	"Journal/service"
-
 	"net/http/httputil"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -39,7 +36,7 @@ func SessionFilter(c *gin.Context) {
 	if c.Request.RequestURI == "/signup" || c.Request.RequestURI == "/login" {
 		return
 	}
-	data := controller.GetData(c)
+	data := GetData(c)
 
 	session := sessions.Default(c)
 	userId, ok := session.Get("uid").(int64)
@@ -68,7 +65,7 @@ func SessionFilter(c *gin.Context) {
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
-	data := controller.GetData(c)
+	data := GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
 	data.Data["ts"] = fmt.Sprintf("%d", time.Now().Unix())
 

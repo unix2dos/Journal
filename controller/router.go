@@ -1,8 +1,6 @@
-package router
+package controller
 
 import (
-	"Journal/controller"
-
 	"Journal/model"
 
 	"github.com/gin-contrib/sessions"
@@ -23,7 +21,7 @@ func Route(r *gin.Engine) {
 	r.Use(CommonReturn)
 	r.Use(SessionFilter)
 
-	r.GET("/getinfo", controller.GetInfo)
-	r.POST("/signup", controller.Signup)
-	r.POST("/login", controller.Login)
+	r.GET("/getinfo", GetInfo)
+	r.POST("/signup", Signup)
+	r.POST("/login", Login)
 }

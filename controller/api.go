@@ -3,9 +3,7 @@ package controller
 import (
 	"Journal/model"
 	"Journal/service"
-
 	"fmt"
-
 	"log"
 
 	"github.com/gin-contrib/sessions"

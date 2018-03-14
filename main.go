@@ -1,12 +1,10 @@
 package main
 
 import (
-	"Journal/router"
-
+	"Journal/controller"
 	"Journal/model"
-	"Journal/utils"
-
 	"Journal/service"
+	"Journal/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +22,6 @@ func init() {
 
 func main() {
 	r := gin.New()
-	router.Route(r)
+	controller.Route(r)
 	r.Run(model.AppConfig.RunPort)
 }
