@@ -11,8 +11,8 @@ type Journal struct {
 	//LikeByMe  string `json:"like_by_me" xorm:"-" redis:"-"` //TODO: 考虑太多头疼,回头再考虑这个字段
 	UserId int64 `json:"-" xorm:"BIGINT(20)"`
 
-	Create     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的
-	Update     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的
+	Create     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的,方便人类看
+	Update     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的,方便人类看
 	CreateTime int64     `json:"create_time,string" xorm:"-" redis:"-"` //转换给客户端的
 	UpdateTime int64     `json:"update_time,string" xorm:"-" redis:"-"` //转换给客户端的
 }
