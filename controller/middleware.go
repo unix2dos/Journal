@@ -9,7 +9,8 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/gin-contrib/sessions"
+	"Journal/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,35 +33,38 @@ func RequestLog(c *gin.Context) {
 }
 
 func SessionFilter(c *gin.Context) {
-	//siginup和login不经过
-	if c.Request.RequestURI == "/signup" || c.Request.RequestURI == "/login" {
+
+	if utils.StringContains(c.Request.RequestURI, NotSessionFilter) {
 		return
 	}
-	data := GetData(c)
 
-	session := sessions.Default(c)
-	userId, ok := session.Get("uid").(int64)
+	data := GetData(c)
+	userId, ok := SessionGet(c)
+	//没有cookie
 	if !ok {
 		data.Ret = model.ErrorNotLogin
 		c.Abort()
 		return
 	}
 
-	user := new(model.User)
-	exist, err := service.MysqlEngine.Id(userId).Get(user)
+	//有cookie
+	user, exist, err := userService.GetUserById(userId)
 	if err != nil {
-		data.Ret = model.ErrorServe
 		c.Abort()
+		data.Ret = model.ErrorServe
+	}
+
+	//有cookie没有用户
+	if !exist {
+		c.Abort()
+		data.Ret = model.ErrorNotLogin
 		return
 	}
 
-	if !exist { //cookie无效
-		data.Ret = model.ErrorNotLogin
-		c.Abort()
-		return
-	}
+	//有cookie, 有用户
 	c.Set("uid", user.Id)
-	data.Data["user"] = user //TODO: 如果写到这里, user信息变了, 可能还是老数据, 如果写到commonReturn里呢??
+
+	//data.Data["user"] = user //TODO: 如果写到这里, user信息变了, 可能还是老数据, 如果写到commonReturn里呢??
 }
 
 func CommonReturn(c *gin.Context) {

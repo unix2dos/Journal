@@ -86,3 +86,19 @@ func (c *RedisStore) HMSet(key string, value interface{}) (err error) {
 
 	return
 }
+
+func (c *RedisStore) HMGetStruct(key string, value interface{}) (err error) {
+	conn := c.redisPool.Get()
+	defer conn.Close()
+
+	v, err := redis.Values(conn.Do("HGETALL", key))
+	if err != nil {
+		return
+	}
+
+	if err = redis.ScanStruct(v, value); err != nil {
+		return
+	}
+
+	return
+}
