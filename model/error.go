@@ -1,12 +1,13 @@
 package model
 
 const (
-	Success    = 0
-	ErrorServe = iota
-	ErrorArgs
+	Success   = 0
+	ErrorArgs = iota //1
 	ErrorNotLogin
 	ErrorRepeatSignUp
 	ErrorUserPassWord
+
+	ErrorServe = -1
 )
 
 var e = map[int]string{

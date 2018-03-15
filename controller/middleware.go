@@ -42,6 +42,7 @@ func SessionFilter(c *gin.Context) {
 	userId, ok := SessionGet(c)
 	//没有cookie
 	if !ok {
+		service.Logs.Errorf("ErrorNotLogin1 userId=%d", userId)
 		data.Ret = model.ErrorNotLogin
 		c.Abort()
 		return
@@ -51,31 +52,46 @@ func SessionFilter(c *gin.Context) {
 	user, exist, err := userService.GetUserById(userId)
 	if err != nil {
 		c.Abort()
+		service.Logs.Errorf("ErrorServe userId=%d err=%v", userId, err)
 		data.Ret = model.ErrorServe
 	}
 
 	//有cookie没有用户
 	if !exist {
 		c.Abort()
+		service.Logs.Errorf("ErrorNotLogin2 userId=%d", userId)
 		data.Ret = model.ErrorNotLogin
 		return
 	}
 
 	//有cookie, 有用户
 	c.Set("uid", user.Id)
-
-	//data.Data["user"] = user //TODO: 如果写到这里, user信息变了, 可能还是老数据, 如果写到commonReturn里呢??
 }
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
 	data := GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
-	data.Data["ts"] = fmt.Sprintf("%d", time.Now().Unix())
+	data.Data["time"] = fmt.Sprintf("%d", time.Now().Unix())
 
 	if data.Ret == model.Success {
+
+		uid, exist := c.Get("uid")
+		if exist {
+			user, exist, err := userService.GetUserById(uid.(int64))
+			if err == nil && exist {
+				data.Data["user"] = user
+			}
+		}
 		c.JSON(http.StatusOK, data)
-	} else {
+
+	} else if data.Ret == model.ErrorServe {
+
 		c.JSON(http.StatusInternalServerError, data)
+
+	} else {
+
+		c.JSON(http.StatusOK, data)
 	}
+
 }

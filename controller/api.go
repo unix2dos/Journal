@@ -17,6 +17,7 @@ func Signup(c *gin.Context) {
 	args := new(model.SignUpArgs)
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("Signup err=%v", err)
 		return
 	}
 
@@ -26,6 +27,7 @@ func Signup(c *gin.Context) {
 	// 检测用户是否存在
 	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
 	if exist {
+		service.Logs.Errorf("Signup ErrorRepeatSignUp")
 		data.Ret = model.ErrorRepeatSignUp
 		return
 	}
@@ -49,6 +51,7 @@ func Login(c *gin.Context) {
 	args := new(model.LoginArgs)
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("Login err=%v", err)
 		return
 	}
 
@@ -56,6 +59,7 @@ func Login(c *gin.Context) {
 	//检测用户是否存在
 	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
 	if !exist {
+		service.Logs.Errorf("Login ErrorUserPassWord")
 		data.Ret = model.ErrorUserPassWord
 		return
 	}
@@ -63,6 +67,7 @@ func Login(c *gin.Context) {
 	//检测密码是否正确
 	if user.Password != args.Password {
 		data.Ret = model.ErrorUserPassWord
+		service.Logs.Errorf("Login ErrorUserPassWord")
 		return
 	}
 

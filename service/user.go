@@ -14,17 +14,19 @@ func NewUser() *User {
 
 func (u *User) GetUserById(userId int64) (user *model.User, exist bool, err error) {
 
-	key := u.GetUserRedisKey(userId)
+	key := u.getUserRedisKey(userId)
 	user = new(model.User)
 
 	exist, err = RedisStore.EXISTS(key)
 	if err != nil {
+		Logs.Errorf("EXISTS userId=%d err=%v", userId, err)
 		return
 	}
 
 	if exist {
 		//从redis找
 		if err = RedisStore.HMGetStruct(key, user); err != nil {
+			Logs.Errorf("HMGetStruct userId=%d err=%v", userId, err)
 			return
 		}
 		return user, true, nil
@@ -33,6 +35,7 @@ func (u *User) GetUserById(userId int64) (user *model.User, exist bool, err erro
 		//从数据库找
 		exist, err = MysqlEngine.Id(userId).Get(user)
 		if err != nil {
+			Logs.Errorf("MysqlEngine Get userId=%d err=%v", userId, err)
 			return
 		}
 
@@ -47,7 +50,7 @@ func (u *User) GetUserById(userId int64) (user *model.User, exist bool, err erro
 }
 
 func (u *User) SetUserToReids(user *model.User) (err error) {
-	key := u.GetUserRedisKey(user.Id)
+	key := u.getUserRedisKey(user.Id)
 	return RedisStore.HMSet(key, user)
 }
 
@@ -75,6 +78,6 @@ func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
 	return
 }
 
-func (u *User) GetUserRedisKey(id int64) (key string) {
+func (u *User) getUserRedisKey(id int64) (key string) {
 	return fmt.Sprintf(model.RedisKeyUser, id)
 }

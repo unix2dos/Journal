@@ -49,7 +49,7 @@ func (f *FileHook) Fire(entry *logrus.Entry) (err error) {
 	node.level = entry.Level
 	node.time = entry.Time
 	node.content = fmt.Sprintf("MODULE=%s|  %v \n", "API", entry.Message)
-	_, node.file, node.line, _ = runtime.Caller(5)
+	_, node.file, node.line, _ = runtime.Caller(6)
 	node.file = filepath.Base(node.file)
 	f.queue <- node
 
