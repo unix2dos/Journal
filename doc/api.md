@@ -1,16 +1,13 @@
-### TODO
-1. redis type
-2. read all
-
 ### RetCode
 
 ```
-	Success    = 0
-	ErrorServe = iota
-	ErrorArgs
+	Success   = 0
+	ErrorArgs = iota //1
 	ErrorNotLogin
 	ErrorRepeatSignUp
 	ErrorUserPassWord
+
+	ErrorServe = -1
 ```
 
 ### 返回统一结构
@@ -29,11 +26,11 @@
 
 ## API
 
-###  /getinfo 获取用户信息 GET
+###  /getinfo GET 获取用户信息
 
 
 
-###  /signup 注册 POST
+###  /signup POST 注册
 
 字段|说明|
 ---|---|---
@@ -41,7 +38,7 @@ alias| 昵称
 email| 邮箱
 password| 密码
 
-###  /login 登录 POST
+###  /login POST 登录
 
 字段|说明|
 ---|---|---

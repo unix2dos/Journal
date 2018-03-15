@@ -78,6 +78,7 @@ func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
 	return
 }
 
-func (u *User) getUserRedisKey(id int64) (key string) {
-	return fmt.Sprintf(model.RedisKeyUser, id)
+//--------------------------------------------------//
+func (u *User) getUserRedisKey(userId int64) string {
+	return fmt.Sprintf(model.RedisKeyUser, userId)
 }

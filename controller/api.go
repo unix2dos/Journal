@@ -4,6 +4,8 @@ import (
 	"Journal/model"
 	"Journal/service"
 
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -75,4 +77,58 @@ func Login(c *gin.Context) {
 
 	// 存储session
 	SessionSave(c)
+}
+
+func JournalList(c *gin.Context) {
+	uid, _ := c.Get("uid")
+	data := GetData(c)
+
+	list, err := journalService.GetJournalList(uid.(int64))
+	if err != nil {
+		service.Logs.Errorf("JournalList err=%v", err)
+		return
+	}
+
+	data.Data["journals"] = list
+}
+
+func JournalAdd(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.JournalArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("JournalAdd err=%v", err)
+		return
+	}
+
+	uid, _ := c.Get("uid")
+	userId := uid.(int64)
+
+	journal := new(model.Journal)
+	journal.Id = service.GetSnowFlakeId()
+	journal.Title = args.Title
+	journal.Content = args.Content
+	journal.Public = args.Public
+	journal.LikeCount = 0
+	journal.UserId = userId
+	journal.Create = time.Now()
+	journal.Update = time.Now()
+	journal.CreateTime = journal.Create.Unix()
+	journal.UpdateTime = journal.Update.Unix()
+
+	if err := journalService.JournalAdd(journal); err != nil {
+		service.Logs.Errorf("JournalAdd err=%v", err)
+		return
+	}
+
+	data.Data["journal"] = journal
+
+}
+
+func JournalUpdate(c *gin.Context) {
+
+}
+
+func JournalDel(c *gin.Context) {
+
 }

@@ -68,7 +68,10 @@ func ConnectMysql() (err error) {
 	if err != nil {
 		return
 	}
-	MysqlEngine.Sync2(new(model.User))
+	MysqlEngine.Sync2(
+		new(model.User),
+		new(model.Journal),
+	)
 	MysqlEngine.ShowSQL(true)
 	return
 }

@@ -24,4 +24,13 @@ func Route(r *gin.Engine) {
 	r.GET("/getinfo", GetInfo)
 	r.POST("/signup", Signup)
 	r.POST("/login", Login)
+
+	journal := r.Group("/journal")
+	{
+		journal.GET("/list", JournalList)
+		journal.POST("/add", JournalAdd)
+		journal.POST("/update", JournalUpdate)
+		journal.POST("/delete", JournalDel)
+	}
+
 }

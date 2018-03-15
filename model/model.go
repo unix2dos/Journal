@@ -7,6 +7,7 @@ var (
 
 //redis key
 var (
-	RedisKeyPrefix string = "journal"
-	RedisKeyUser   string = RedisKeyPrefix + ":user:%d"
+	RedisKeyPrefix  string = "journal"
+	RedisKeyUser    string = RedisKeyPrefix + ":user:%d"
+	RedisKeyJournal string = RedisKeyPrefix + ":journal:%d"
 )
