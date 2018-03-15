@@ -15,7 +15,7 @@ func Route(r *gin.Engine) {
 	r.Use(sessions.Sessions("journal", store))
 
 	//中间件顺序不要变
-	r.Use(gin.Logger())
+	r.Use(gin.Logger()) //默认请求日志
 	r.Use(gin.Recovery())
 	r.Use(RequestLog)
 	r.Use(CommonReturn)

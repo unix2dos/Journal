@@ -20,25 +20,22 @@
 		'data': {} （不同接口不一样）
 	 }
 ```
+### API 接口信息
 
 
+####  /getinfo GET 获取用户信息
 
 
-## API
-
-###  /getinfo GET 获取用户信息
-
-
-
-###  /signup POST 注册
+---
+####  /signup POST 注册
 
 字段|说明|
 ---|---|---
 alias| 昵称
 email| 邮箱
 password| 密码
-
-###  /login POST 登录
+---
+####  /login POST 登录
 
 字段|说明|
 ---|---|---
@@ -46,7 +43,7 @@ email | 邮箱
 password| 密码
 
 
-
+---
 二. /login
 Method: POST (username, password)
 Success:

@@ -83,10 +83,15 @@ func JournalList(c *gin.Context) {
 	uid, _ := c.Get("uid")
 	data := GetData(c)
 
-	list, err := journalService.GetJournalList(uid.(int64))
+	list, err := journalService.GetJournalList(uid.(int64)) //TODO: 从redis查?
 	if err != nil {
 		service.Logs.Errorf("JournalList err=%v", err)
 		return
+	}
+
+	for _, v := range list {
+		v.CreateTime = v.Create.Unix()
+		v.UpdateTime = v.Update.Unix()
 	}
 
 	data.Data["journals"] = list

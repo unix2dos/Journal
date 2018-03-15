@@ -14,17 +14,15 @@ func NewJournal() *Journal {
 
 func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error) {
 
+	list = make([]*model.Journal, 0)
+	MysqlEngine.Where("user_id=?", userId).Find(&list)
+
+	//TODO: 是否需要从redis查??
 	//通过userId 获取 journals ids
-	//list = make([]*model.Journal, 0)
-
-	//MysqlEngine.Where("user_id=?", userId).Find(list)
-
-	//selcect * form where id =
-
 	//根据ids 获取 journal
-
 	return
 }
+
 func (j *Journal) JournalAdd(journal *model.Journal) (err error) {
 
 	return j.SetJournalToMysqlAndRedis(journal)

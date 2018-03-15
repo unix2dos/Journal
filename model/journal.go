@@ -13,6 +13,6 @@ type Journal struct {
 
 	Create     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的,方便人类看
 	Update     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的,方便人类看
-	CreateTime int64     `json:"create_time,string" xorm:"-" redis:"-"` //转换给客户端的
-	UpdateTime int64     `json:"update_time,string" xorm:"-" redis:"-"` //转换给客户端的
+	CreateTime int64     `json:"create_time,string" xorm:"-" redis:"-"` //转换给客户端的,方便前端排序
+	UpdateTime int64     `json:"update_time,string" xorm:"-" redis:"-"` //转换给客户端的,方便前端排序
 }

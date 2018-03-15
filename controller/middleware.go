@@ -70,6 +70,12 @@ func SessionFilter(c *gin.Context) {
 
 func CommonReturn(c *gin.Context) {
 	c.Next()
+
+	if c.Writer.Status() == 404 || c.Writer.Status() == 405 {
+		c.Abort()
+		return
+	}
+
 	data := GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)
 	data.Data["time"] = fmt.Sprintf("%d", time.Now().Unix())
