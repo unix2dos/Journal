@@ -11,7 +11,14 @@ type LoginArgs struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type JournalArgs struct {
+type JournalAddArgs struct {
+	Title   string `json:"title" binding:"required"`
+	Content string `json:"content" binding:"required"`
+	Public  string `json:"public" binding:"required"`
+}
+
+type JournalUpdateArgs struct {
+	Id      string `json:"id" binding:"required"`
 	Title   string `json:"title" binding:"required"`
 	Content string `json:"content" binding:"required"`
 	Public  string `json:"public" binding:"required"`

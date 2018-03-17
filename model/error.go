@@ -6,17 +6,19 @@ const (
 	ErrorNotLogin
 	ErrorRepeatSignUp
 	ErrorUserPassWord
+	ErrorJournalNotExist
 
 	ErrorServe = -1
 )
 
 var e = map[int]string{
-	Success:           "success",
-	ErrorServe:        "serve error",
-	ErrorArgs:         "error args",
-	ErrorNotLogin:     "not login",
-	ErrorRepeatSignUp: "email has sign up",
-	ErrorUserPassWord: "email or password error",
+	Success:              "success",
+	ErrorServe:           "serve error",
+	ErrorArgs:            "error args",
+	ErrorNotLogin:        "not login",
+	ErrorRepeatSignUp:    "email has sign up",
+	ErrorUserPassWord:    "email or password error",
+	ErrorJournalNotExist: "journal not exist",
 }
 
 func GetDataMsg(code int) string {

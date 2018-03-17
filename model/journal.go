@@ -1,6 +1,43 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"strconv"
+
+	"fmt"
+
+	"github.com/gin-gonic/gin/json"
+)
+
+const RedigoTimestamp = "2006-01-02 15:04:05.999999 -0700 MST"
+
+type Time time.Time
+
+func (t Time) MarshalJSON() ([]byte, error) {
+	fmt.Println("MarshalJSON")
+	return json.Marshal(strconv.FormatInt(time.Time(t).Unix(), 10))
+}
+
+func (t Time) MarshalBinary() ([]byte, error) {
+	fmt.Println("MarshalBinary")
+	return []byte{'1'}, nil
+}
+
+func (t Time) UnmarshalBinary(data []byte) error {
+	fmt.Println("UnmarshalBinary")
+	return nil
+}
+
+func (t Time) MarshalText() ([]byte, error) {
+	fmt.Println("MarshalText")
+	return []byte{'2'}, nil
+}
+
+func (t Time) UnmarshalText(data []byte) error {
+	fmt.Println("UnmarshalText")
+	return nil
+}
 
 type Journal struct {
 	Id        int64  `json:"id,string" xorm:"pk BIGINT(20)"`
@@ -11,8 +48,6 @@ type Journal struct {
 	//LikeByMe  string `json:"like_by_me" xorm:"-" redis:"-"` //TODO: 考虑太多头疼,回头再考虑这个字段
 	UserId int64 `json:"-" xorm:"BIGINT(20)"`
 
-	Create     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的,方便人类看
-	Update     time.Time `json:"-"  xorm:"DATETIME"`                    //存储数据库的,方便人类看
-	CreateTime int64     `json:"create_time,string" xorm:"-" redis:"-"` //转换给客户端的,方便前端排序
-	UpdateTime int64     `json:"update_time,string" xorm:"-" redis:"-"` //转换给客户端的,方便前端排序
+	CreateTime Time `json:"create_time"  xorm:"DATETIME"` //1.存数据库, 易看
+	UpdateTime Time `json:"update_time"  xorm:"DATETIME"`
 }

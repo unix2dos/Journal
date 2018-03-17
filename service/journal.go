@@ -23,11 +23,6 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 	return
 }
 
-func (j *Journal) JournalAdd(journal *model.Journal) (err error) {
-
-	return j.SetJournalToMysqlAndRedis(journal)
-}
-
 func (j *Journal) GetJournalById(journalId int64) (journal *model.Journal, exist bool, err error) {
 
 	key := j.getJournalRedisKey(journalId)

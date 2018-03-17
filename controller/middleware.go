@@ -18,6 +18,7 @@ func RequestLog(c *gin.Context) {
 
 	requestDump, _ := httputil.DumpRequest(c.Request, true)
 	start := time.Now()
+
 	c.Next()
 
 	latency := time.Since(start)
@@ -37,7 +38,6 @@ func SessionFilter(c *gin.Context) {
 	if utils.StringContains(c.Request.RequestURI, NotSessionFilter) {
 		return
 	}
-
 	data := GetData(c)
 	userId, ok := SessionGet(c)
 	//没有cookie
@@ -69,12 +69,12 @@ func SessionFilter(c *gin.Context) {
 }
 
 func CommonReturn(c *gin.Context) {
-	c.Next()
-
 	if c.Writer.Status() == 404 || c.Writer.Status() == 405 {
 		c.Abort()
 		return
 	}
+
+	c.Next()
 
 	data := GetData(c)
 	data.Msg = model.GetDataMsg(data.Ret)

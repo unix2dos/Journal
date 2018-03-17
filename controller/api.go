@@ -6,6 +6,8 @@ import (
 
 	"time"
 
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,8 +31,8 @@ func Signup(c *gin.Context) {
 	// 检测用户是否存在
 	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
 	if exist {
-		service.Logs.Errorf("Signup ErrorRepeatSignUp")
 		data.Ret = model.ErrorRepeatSignUp
+		service.Logs.Errorf("Signup ErrorRepeatSignUp")
 		return
 	}
 
@@ -39,9 +41,14 @@ func Signup(c *gin.Context) {
 	user.Alias = args.Alias
 	user.Email = args.Email
 	user.Password = args.Password
-	userService.SetUserToMysqlAndRedis(user)
-	c.Set("uid", user.Id)
+	err := userService.SetUserToMysqlAndRedis(user)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("Signup err=%v", err)
+		return
+	}
 
+	c.Set("uid", user.Id)
 	// 存储session
 	SessionSave(c)
 }
@@ -57,12 +64,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	user := new(model.User)
 	//检测用户是否存在
+	user := new(model.User)
 	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
 	if !exist {
-		service.Logs.Errorf("Login ErrorUserPassWord")
 		data.Ret = model.ErrorUserPassWord
+		service.Logs.Errorf("Login ErrorUserPassWord")
 		return
 	}
 
@@ -74,7 +81,6 @@ func Login(c *gin.Context) {
 	}
 
 	c.Set("uid", user.Id)
-
 	// 存储session
 	SessionSave(c)
 }
@@ -85,21 +91,16 @@ func JournalList(c *gin.Context) {
 
 	list, err := journalService.GetJournalList(uid.(int64)) //TODO: 从redis查?
 	if err != nil {
+		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalList err=%v", err)
 		return
 	}
-
-	for _, v := range list {
-		v.CreateTime = v.Create.Unix()
-		v.UpdateTime = v.Update.Unix()
-	}
-
 	data.Data["journals"] = list
 }
 
 func JournalAdd(c *gin.Context) {
 	data := GetData(c)
-	args := new(model.JournalArgs)
+	args := new(model.JournalAddArgs)
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
 		service.Logs.Errorf("JournalAdd err=%v", err)
@@ -116,22 +117,52 @@ func JournalAdd(c *gin.Context) {
 	journal.Public = args.Public
 	journal.LikeCount = 0
 	journal.UserId = userId
-	journal.Create = time.Now()
-	journal.Update = time.Now()
-	journal.CreateTime = journal.Create.Unix()
-	journal.UpdateTime = journal.Update.Unix()
+	journal.CreateTime = model.Time(time.Now())
+	journal.UpdateTime = model.Time(time.Now())
 
-	if err := journalService.JournalAdd(journal); err != nil {
-		service.Logs.Errorf("JournalAdd err=%v", err)
+	if err := journalService.SetJournalToMysqlAndRedis(journal); err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalAdd sql err=%v", err)
 		return
 	}
 
 	data.Data["journal"] = journal
-
 }
 
 func JournalUpdate(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.JournalUpdateArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("JournalUpdate err=%v", err)
+		return
+	}
 
+	//先看journal是否存在
+	id, _ := strconv.ParseInt(args.Id, 10, 64)
+	journal, exist, err := journalService.GetJournalById(id)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalUpdate err=%v", err)
+		return
+	}
+
+	if !exist {
+		data.Ret = model.ErrorJournalNotExist
+		service.Logs.Errorf("JournalUpdate not exist %v", args.Id)
+		return
+	}
+
+	journal.Public = args.Public
+	journal.Title = args.Title
+	journal.Content = args.Content
+	journal.UpdateTime = model.Time(time.Now())
+	if err := journalService.SetJournalToMysqlAndRedis(journal); err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalUpdate sql err=%v", err)
+		return
+	}
+	data.Data["journal"] = journal
 }
 
 func JournalDel(c *gin.Context) {
