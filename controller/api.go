@@ -166,5 +166,33 @@ func JournalUpdate(c *gin.Context) {
 }
 
 func JournalDel(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.JournalDeleteArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("JournalDel err=%v", err)
+		return
+	}
 
+	//先看journal是否存在
+	id, _ := strconv.ParseInt(args.Id, 10, 64)
+	journal, exist, err := journalService.GetJournalById(id)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalDel err=%v", err)
+		return
+	}
+
+	if !exist {
+		data.Ret = model.ErrorJournalNotExist
+		service.Logs.Errorf("JournalDel not exist %v", args.Id)
+		return
+	}
+
+	_ := journal //TODO: 放到明天写
+	//if err := journalService.SetJournalToMysqlAndRedis(journal); err != nil {
+	//	data.Ret = model.ErrorServe
+	//	service.Logs.Errorf("JournalUpdate sql err=%v", err)
+	//	return
+	//}
 }

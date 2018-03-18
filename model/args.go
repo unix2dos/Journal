@@ -23,3 +23,7 @@ type JournalUpdateArgs struct {
 	Content string `json:"content" binding:"required"`
 	Public  string `json:"public" binding:"required"`
 }
+
+type JournalDeleteArgs struct {
+	Id string `json:"id" binding:"required"`
+}
