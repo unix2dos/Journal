@@ -2,6 +2,7 @@ package service
 
 import (
 	"Journal/model"
+	"encoding/json"
 	"fmt"
 )
 
@@ -36,8 +37,15 @@ func (j *Journal) GetJournalById(journalId int64) (journal *model.Journal, exist
 
 	if exist {
 		//从redis找
-		if err = RedisStore.HMGetStruct(key, journal); err != nil {
-			Logs.Errorf("HMGetStruct journalId=%d err=%v", journalId, err)
+		var str string
+		str, err = RedisStore.Get(key)
+		if err != nil {
+			Logs.Errorf("Get journalId=%d err=%v", journalId, err)
+			return
+		}
+		err = json.Unmarshal([]byte(str), journal)
+		if err != nil {
+			Logs.Errorf("Unmarshal journalId=%d err=%v", journalId, err)
 			return
 		}
 		return journal, true, nil
@@ -62,7 +70,11 @@ func (j *Journal) GetJournalById(journalId int64) (journal *model.Journal, exist
 
 func (j *Journal) SetJournalToReids(journal *model.Journal) (err error) {
 	key := j.getJournalRedisKey(journal.Id)
-	return RedisStore.HMSet(key, journal)
+	bytes, err := json.Marshal(journal)
+	if err != nil {
+		return
+	}
+	return RedisStore.Set(key, bytes)
 }
 
 func (j *Journal) SetJournalToMysqlAndRedis(journal *model.Journal) (err error) {
