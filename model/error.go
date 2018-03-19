@@ -3,6 +3,7 @@ package model
 const (
 	Success   = 0
 	ErrorArgs = iota //1
+	ErrorValidate
 	ErrorNotLogin
 	ErrorRepeatSignUp
 	ErrorUserPassWord
@@ -15,6 +16,7 @@ var e = map[int]string{
 	Success:              "success",
 	ErrorServe:           "serve error",
 	ErrorArgs:            "error args",
+	ErrorValidate:        "err validate",
 	ErrorNotLogin:        "not login",
 	ErrorRepeatSignUp:    "email has sign up",
 	ErrorUserPassWord:    "email or password error",

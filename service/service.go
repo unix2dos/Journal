@@ -10,6 +10,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
 	"github.com/zheng-ji/goSnowFlake"
+	"gopkg.in/go-playground/validator.v8"
 )
 
 var (
@@ -17,6 +18,7 @@ var (
 	RedisStore  *utils.RedisStore
 	SnowFlake   *goSnowFlake.IdWorker
 	Logs        *logrus.Logger
+	Validate    *validator.Validate
 )
 
 func SInit() {
@@ -30,6 +32,11 @@ func SInit() {
 	if err != nil {
 		panic(err)
 	}
+
+	//validate
+	config := &validator.Config{TagName: "validate"}
+	Validate = validator.New(config)
+
 }
 
 func LogInit() {

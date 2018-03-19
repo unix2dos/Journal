@@ -21,11 +21,16 @@ func Signup(c *gin.Context) {
 	args := new(model.SignUpArgs)
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
-		service.Logs.Errorf("Signup err=%v", err)
+		service.Logs.Errorf("Signup bind err=%v", err)
 		return
 	}
 
-	// TODO:验证输入合法
+	// 验证输入合法
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("Signup validate err=%v", err)
+		return
+	}
 
 	user := new(model.User)
 	// 检测用户是否存在
@@ -61,6 +66,12 @@ func Login(c *gin.Context) {
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
 		service.Logs.Errorf("Login err=%v", err)
+		return
+	}
+
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("Login validate err=%v", err)
 		return
 	}
 
@@ -107,6 +118,12 @@ func JournalAdd(c *gin.Context) {
 		return
 	}
 
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("JournalAdd validate err=%v", err)
+		return
+	}
+
 	uid, _ := c.Get("uid")
 	userId := uid.(int64)
 
@@ -136,6 +153,12 @@ func JournalUpdate(c *gin.Context) {
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
 		service.Logs.Errorf("JournalUpdate err=%v", err)
+		return
+	}
+
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("JournalUpdate validate err=%v", err)
 		return
 	}
 
@@ -173,6 +196,12 @@ func JournalDel(c *gin.Context) {
 	if err := c.BindJSON(args); err != nil {
 		data.Ret = model.ErrorArgs
 		service.Logs.Errorf("JournalDel err=%v", err)
+		return
+	}
+
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("JournalDel validate err=%v", err)
 		return
 	}
 
