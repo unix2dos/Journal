@@ -39,4 +39,7 @@ type Journal struct {
 
 	CreateTime Time `json:"create_time"  xorm:"DATETIME"`
 	UpdateTime Time `json:"update_time"  xorm:"DATETIME"`
+
+	LikeCount int64  `json:"like_count,string,omitempty" xorm:"-"` //这两个需要自己算
+	LikeByMe  string `json:"like_by_me,omitempty" xorm:"-"`
 }

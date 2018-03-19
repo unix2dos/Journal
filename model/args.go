@@ -27,3 +27,13 @@ type JournalUpdateArgs struct {
 type JournalDeleteArgs struct {
 	Id string `json:"id" binding:"required"`
 }
+
+type LikeAddArgs struct {
+	LikeType string `json:"like_type" binding:"required"` //"1"->journal  "2"->comment
+	LikeId   int64  `json:"like_id" binding:"required"`
+}
+
+type LikeDelArgs struct {
+	LikeType string `json:"like_type" binding:"required"`
+	LikeId   int64  `json:"like_id" binding:"required"`
+}

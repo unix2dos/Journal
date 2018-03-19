@@ -17,15 +17,16 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 
 	list = make([]*model.Journal, 0)
 	MysqlEngine.Where("user_id=?", userId).Find(&list)
-	//是否需要从redis查??怎么查??
-	//通过userId 获取 journals ids
-	//根据ids 获取 journal
+
+	//TODO: 加上 like_by_me, like_count
+
 	return
 }
 
 func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.Journal, exist bool, err error) {
 	defer func() {
-		if journal.UserId != userId { //因为redis没法条件,所以做个校验
+		//因为redis没法条件,所以做个校验
+		if journal.UserId != userId {
 			exist = false
 		}
 	}()
