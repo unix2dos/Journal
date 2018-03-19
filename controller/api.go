@@ -3,6 +3,7 @@ package controller
 import (
 	"Journal/model"
 	"Journal/service"
+	"Journal/utils"
 
 	"time"
 
@@ -32,8 +33,8 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	user := new(model.User)
 	// 检测用户是否存在
+	user := new(model.User)
 	exist, _ := service.MysqlEngine.Where("email = ?", args.Email).Get(user)
 	if exist {
 		data.Ret = model.ErrorRepeatSignUp
@@ -45,7 +46,7 @@ func Signup(c *gin.Context) {
 	user.Id = service.GetSnowFlakeId()
 	user.Alias = args.Alias
 	user.Email = args.Email
-	user.Password = args.Password
+	user.Password = utils.ScryptPassWord(args.Password)
 	err := userService.SetUserToMysqlAndRedis(user)
 	if err != nil {
 		data.Ret = model.ErrorServe
@@ -85,7 +86,7 @@ func Login(c *gin.Context) {
 	}
 
 	//检测密码是否正确
-	if user.Password != args.Password {
+	if user.Password != utils.ScryptPassWord(args.Password) {
 		data.Ret = model.ErrorUserPassWord
 		service.Logs.Errorf("Login ErrorUserPassWord")
 		return
