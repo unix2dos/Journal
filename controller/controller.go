@@ -46,3 +46,8 @@ func SessionSave(c *gin.Context) {
 	session.Set("uid", useId)
 	session.Save()
 }
+
+func GetUid(c *gin.Context) int64 {
+	uid, _ := c.Get("uid")
+	return uid.(int64)
+}

@@ -10,3 +10,9 @@ type User struct {
 	Create   time.Time `json:"-" redis:"-" xorm:"created DATETIME"`
 	Update   time.Time `json:"-" redis:"-" xorm:"updated DATETIME"`
 }
+
+type UserLike struct {
+	UserId    int64 `json:"user_id,string"`
+	JournalId int64 `json:"journal_id,string" default(0)`
+	CommentId int64 `json:"comment_id,string" default(0)`
+}

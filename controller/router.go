@@ -31,6 +31,27 @@ func Route(r *gin.Engine) {
 		journal.POST("/add", JournalAdd)
 		journal.POST("/update", JournalUpdate)
 		journal.POST("/delete", JournalDel)
+
+		journal.GET("/recommend", JournalRecommend)
+	}
+
+	comment := r.Group("/comment")
+	{
+		comment.GET("/list", CommentList)
+		comment.POST("/add", CommentAdd)
+		comment.POST("/update", CommentUpdate)
+		comment.POST("/delete", CommentDelete)
+	}
+
+	like := r.Group("/like")
+	{
+		like.POST("/add", LikeAdd)
+		like.POST("/delete", LikeDelete)
+	}
+
+	archive := r.Group("/archive")
+	{
+		archive.POST("/get", ArchiveGet)
 	}
 
 }

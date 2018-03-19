@@ -82,11 +82,10 @@ func CommonReturn(c *gin.Context) {
 
 	if data.Ret == model.Success {
 
-		uid, _ := c.Get("uid")
-		user, exist, err := userService.GetUserById(uid.(int64))
+		user, exist, err := userService.GetUserById(GetUid(c))
 		if err == nil && exist {
 			data.Data["user"] = user
-		} //TODO: 应该公共出去?
+		}
 
 		c.JSON(http.StatusOK, data)
 

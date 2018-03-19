@@ -17,8 +17,7 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 
 	list = make([]*model.Journal, 0)
 	MysqlEngine.Where("user_id=?", userId).Find(&list)
-
-	//TODO: 是否需要从redis查??
+	//是否需要从redis查??怎么查??
 	//通过userId 获取 journals ids
 	//根据ids 获取 journal
 	return
@@ -26,7 +25,7 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 
 func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.Journal, exist bool, err error) {
 	defer func() {
-		if journal.UserId != userId {
+		if journal.UserId != userId { //因为redis没法条件,所以做个校验
 			exist = false
 		}
 	}()
@@ -57,7 +56,7 @@ func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.
 
 	} else {
 		//从数据库找
-		exist, err = MysqlEngine.Id(journalId).Get(journal)
+		exist, err = MysqlEngine.Id(journalId).Where("useid=?", userId).Get(journal)
 		if err != nil {
 			Logs.Errorf("MysqlEngine Get journalId=%d err=%v", journalId, err)
 			return
@@ -131,6 +130,27 @@ func (j *Journal) DelJournalFromMysqlAndRedis(journal *model.Journal) (err error
 
 	err = j.DelJournalFromReids(journal)
 
+	return
+}
+
+func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err error) {
+	limit := 3
+
+	list = make([]*model.Journal, 0)
+
+	MysqlEngine.SQL("SELECT * FROM journal WHERE user_id != ? AND public = ? "+
+		"ORDER BY like_count DESC, create_time DESC  LIMIT ?",
+		userId, "1",
+		limit,
+	).Find(&list)
+
+	//不能是公开的
+	//不是自己的
+	//限制多少条
+	//优先点赞数量最多的
+	//优先最新的
+
+	//TODO:优先不是已经喜欢的
 	return
 }
 

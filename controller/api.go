@@ -98,10 +98,9 @@ func Login(c *gin.Context) {
 }
 
 func JournalList(c *gin.Context) {
-	uid, _ := c.Get("uid")
 	data := GetData(c)
 
-	list, err := journalService.GetJournalList(uid.(int64)) //TODO: 从redis查?
+	list, err := journalService.GetJournalList(GetUid(c))
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalList err=%v", err)
@@ -125,16 +124,12 @@ func JournalAdd(c *gin.Context) {
 		return
 	}
 
-	uid, _ := c.Get("uid")
-	userId := uid.(int64)
-
 	journal := new(model.Journal)
 	journal.Id = service.GetSnowFlakeId()
 	journal.Title = args.Title
 	journal.Content = args.Content
 	journal.Public = args.Public
-	journal.LikeCount = 0
-	journal.UserId = userId
+	journal.UserId = GetUid(c)
 	journal.CreateTime = model.Time(time.Now())
 	journal.UpdateTime = model.Time(time.Now())
 
@@ -148,7 +143,6 @@ func JournalAdd(c *gin.Context) {
 }
 
 func JournalUpdate(c *gin.Context) {
-	uid, _ := c.Get("uid")
 	data := GetData(c)
 	args := new(model.JournalUpdateArgs)
 	if err := c.BindJSON(args); err != nil {
@@ -165,7 +159,7 @@ func JournalUpdate(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetJournalById(uid.(int64), id)
+	journal, exist, err := journalService.GetJournalById(GetUid(c), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalUpdate err=%v", err)
@@ -191,7 +185,6 @@ func JournalUpdate(c *gin.Context) {
 }
 
 func JournalDel(c *gin.Context) {
-	uid, _ := c.Get("uid")
 	data := GetData(c)
 	args := new(model.JournalDeleteArgs)
 	if err := c.BindJSON(args); err != nil {
@@ -208,7 +201,7 @@ func JournalDel(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetJournalById(uid.(int64), id)
+	journal, exist, err := journalService.GetJournalById(GetUid(c), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalDel err=%v", err)
@@ -226,4 +219,39 @@ func JournalDel(c *gin.Context) {
 		service.Logs.Errorf("JournalDel sql err=%v", err)
 		return
 	}
+}
+
+func JournalRecommend(c *gin.Context) {
+	data := GetData(c)
+	list, err := journalService.GetJournalRecommend(GetUid(c))
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalRecommend err=%v", err)
+		return
+	}
+	data.Data["journals"] = list
+}
+
+func CommentList(c *gin.Context) {
+
+}
+
+func CommentAdd(c *gin.Context) {
+
+}
+func CommentUpdate(c *gin.Context) {
+
+}
+func CommentDelete(c *gin.Context) {
+
+}
+
+func LikeAdd(c *gin.Context) {
+
+}
+func LikeDelete(c *gin.Context) {
+
+}
+func ArchiveGet(c *gin.Context) {
+
 }
