@@ -130,6 +130,7 @@ func JournalAdd(c *gin.Context) {
 }
 
 func JournalUpdate(c *gin.Context) {
+	uid, _ := c.Get("uid")
 	data := GetData(c)
 	args := new(model.JournalUpdateArgs)
 	if err := c.BindJSON(args); err != nil {
@@ -140,7 +141,7 @@ func JournalUpdate(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetJournalById(id)
+	journal, exist, err := journalService.GetJournalById(uid.(int64), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalUpdate err=%v", err)
@@ -166,6 +167,7 @@ func JournalUpdate(c *gin.Context) {
 }
 
 func JournalDel(c *gin.Context) {
+	uid, _ := c.Get("uid")
 	data := GetData(c)
 	args := new(model.JournalDeleteArgs)
 	if err := c.BindJSON(args); err != nil {
@@ -176,7 +178,7 @@ func JournalDel(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetJournalById(id)
+	journal, exist, err := journalService.GetJournalById(uid.(int64), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalDel err=%v", err)
@@ -189,10 +191,9 @@ func JournalDel(c *gin.Context) {
 		return
 	}
 
-	_ := journal //TODO: 放到明天写
-	//if err := journalService.SetJournalToMysqlAndRedis(journal); err != nil {
-	//	data.Ret = model.ErrorServe
-	//	service.Logs.Errorf("JournalUpdate sql err=%v", err)
-	//	return
-	//}
+	if err := journalService.DelJournalFromMysqlAndRedis(journal); err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalDel sql err=%v", err)
+		return
+	}
 }

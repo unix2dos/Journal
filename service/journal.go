@@ -24,7 +24,12 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 	return
 }
 
-func (j *Journal) GetJournalById(journalId int64) (journal *model.Journal, exist bool, err error) {
+func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.Journal, exist bool, err error) {
+	defer func() {
+		if journal.UserId != userId {
+			exist = false
+		}
+	}()
 
 	key := j.getJournalRedisKey(journalId)
 	journal = new(model.Journal)
@@ -77,6 +82,12 @@ func (j *Journal) SetJournalToReids(journal *model.Journal) (err error) {
 	return RedisStore.Set(key, bytes)
 }
 
+func (j *Journal) DelJournalFromReids(journal *model.Journal) (err error) {
+	key := j.getJournalRedisKey(journal.Id)
+	_, err = RedisStore.Del(key)
+	return
+}
+
 func (j *Journal) SetJournalToMysqlAndRedis(journal *model.Journal) (err error) {
 	session := MysqlEngine.NewSession()
 	session.Begin()
@@ -98,6 +109,28 @@ func (j *Journal) SetJournalToMysqlAndRedis(journal *model.Journal) (err error) 
 	}
 
 	err = j.SetJournalToReids(journal)
+	return
+}
+
+func (j *Journal) DelJournalFromMysqlAndRedis(journal *model.Journal) (err error) {
+	session := MysqlEngine.NewSession()
+	session.Begin()
+	defer func() {
+		if err == nil {
+			session.Commit()
+		} else {
+			session.Rollback()
+		}
+		session.Close()
+	}()
+
+	_, err = session.ID(journal.Id).Delete(journal)
+	if err != nil {
+		return
+	}
+
+	err = j.DelJournalFromReids(journal)
+
 	return
 }
 

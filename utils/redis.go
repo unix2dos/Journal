@@ -75,6 +75,16 @@ func (c *RedisStore) Get(key string) (s string, err error) {
 	return
 }
 
+func (c *RedisStore) Del(key ...interface{}) (num int, err error) {
+	conn := c.redisPool.Get()
+	defer conn.Close()
+	num, err = redis.Int(conn.Do("DEL", key...))
+	if err != nil {
+		return
+	}
+	return
+}
+
 func (c *RedisStore) HMSet(key string, value interface{}) (err error) {
 	conn := c.redisPool.Get()
 	defer conn.Close()
