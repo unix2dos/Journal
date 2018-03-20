@@ -78,6 +78,7 @@ func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
 	return
 }
 
+//userLike
 func (u *User) SetUserLikeToMysql(like *model.UserLike) (err error) {
 	_, err = MysqlEngine.Insert(like)
 	return

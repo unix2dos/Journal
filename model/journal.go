@@ -29,17 +29,17 @@ func (t Time) String() string {
 	return time.Time(t).String()
 }
 
-//redis存序列化字符串
+//redis存json字符串
 type Journal struct {
 	Id      int64  `json:"id,string" xorm:"pk BIGINT(20)"`
 	Title   string `json:"title" xorm:"VARCHAR(255)"`
 	Content string `json:"content" xorm:"Text"`
 	Public  string `json:"public" xorm:"VARCHAR(20)"`
-	UserId  int64  `json:"-" xorm:"BIGINT(20)"`
+	UserId  int64  `json:"user_id" xorm:"BIGINT(20)"`
 
 	CreateTime Time `json:"create_time"  xorm:"DATETIME"`
 	UpdateTime Time `json:"update_time"  xorm:"DATETIME"`
 
-	LikeCount int64  `json:"like_count,string,omitempty" xorm:"-"` //这两个需要自己算
+	LikeCount int64  `json:"like_count,string,omitempty" xorm:"-"` //这两个服务器算给客户端
 	LikeByMe  string `json:"like_by_me,omitempty" xorm:"-"`
 }

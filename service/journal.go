@@ -18,7 +18,23 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 	list = make([]*model.Journal, 0)
 	MysqlEngine.Where("user_id=?", userId).Find(&list)
 
-	//TODO: 加上 like_by_me, like_count
+	likeList := make([]*model.UserLike, 0)
+	MysqlEngine.Where("user_id=?", userId).And("journal_id!=?", 0).Find(&likeList)
+
+	for _, v := range list {
+		//v.UserId
+
+		for _, vv := range likeList {
+			if v.Id == vv.JournalId {
+
+			}
+		}
+
+	}
+
+	//TODO: 加上 like_by_me,
+
+	//TODO: like_count
 
 	return
 }
