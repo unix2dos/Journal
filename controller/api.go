@@ -159,7 +159,7 @@ func JournalUpdate(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetJournalById(GetUid(c), id)
+	journal, exist, err := journalService.GetUserJournalById(GetUid(c), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalUpdate err=%v", err)
@@ -201,7 +201,7 @@ func JournalDel(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetJournalById(GetUid(c), id)
+	journal, exist, err := journalService.GetUserJournalById(GetUid(c), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalDel err=%v", err)
@@ -247,10 +247,77 @@ func CommentDelete(c *gin.Context) {
 }
 
 func LikeAdd(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.LikeAddArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("LikeAdd err=%v", err)
+		return
+	}
+
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("LikeAdd validate err=%v", err)
+		return
+	}
+
+	//是否可以点赞
+	userLike := new(model.UserLike)
+	if args.LikeType == "1" {
+		//判断是否有这个id
+		_, exist, err := journalService.GetJournalById(args.LikeId)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeAdd GetJournalById err=%v", err)
+			return
+		}
+		if !exist {
+			data.Ret = model.ErrorJournalNotExist
+			service.Logs.Errorf("LikeAdd ErrorJournalNotExist")
+			return
+		}
+		//判断是否点赞过
+		like, err := service.MysqlEngine.Where("user_id=?", GetUid(c)).And("journal_id=?", args.LikeId).Get(userLike)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeAdd ErrorServe err=%v", err)
+			return
+		}
+		if like {
+			data.Ret = model.ErrorLikeAlready
+			service.Logs.Errorf("LikeAdd ErrorLikeAlready")
+			return
+		}
+
+		userLike.JournalId = args.LikeId
+
+	} else if args.LikeType == "2" {
+
+		//TODO:1111111111111
+		userLike.CommentId = args.LikeId
+
+	}
+
+	userLike.UserId = GetUid(c)
+	userService.SetUserLikeToMysql(userLike)
 
 }
 func LikeDelete(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.LikeDelArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("LikeDelete err=%v", err)
+		return
+	}
 
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("LikeDelete validate err=%v", err)
+		return
+	}
+
+	//先看是否点过赞
 }
 func ArchiveGet(c *gin.Context) {
 

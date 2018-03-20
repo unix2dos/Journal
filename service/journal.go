@@ -23,13 +23,7 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 	return
 }
 
-func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.Journal, exist bool, err error) {
-	defer func() {
-		//因为redis没法条件,所以做个校验
-		if journal.UserId != userId {
-			exist = false
-		}
-	}()
+func (j *Journal) GetJournalById(journalId int64) (journal *model.Journal, exist bool, err error) {
 
 	key := j.getJournalRedisKey(journalId)
 	journal = new(model.Journal)
@@ -57,7 +51,7 @@ func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.
 
 	} else {
 		//从数据库找
-		exist, err = MysqlEngine.Id(journalId).Where("useid=?", userId).Get(journal)
+		exist, err = MysqlEngine.Id(journalId).Get(journal)
 		if err != nil {
 			Logs.Errorf("MysqlEngine Get journalId=%d err=%v", journalId, err)
 			return
@@ -68,6 +62,16 @@ func (j *Journal) GetJournalById(userId int64, journalId int64) (journal *model.
 			j.SetJournalToReids(journal)
 			return journal, true, nil
 		}
+	}
+
+	return
+}
+
+func (j *Journal) GetUserJournalById(userId int64, journalId int64) (journal *model.Journal, exist bool, err error) {
+
+	journal, exist, err = j.GetJournalById(journalId)
+	if exist && journal.UserId != userId {
+		exist = false
 	}
 
 	return

@@ -29,11 +29,13 @@ type JournalDeleteArgs struct {
 }
 
 type LikeAddArgs struct {
-	LikeType string `json:"like_type" binding:"required"` //"1"->journal  "2"->comment
-	LikeId   int64  `json:"like_id" binding:"required"`
+	//"1"	journal
+	//"2"	comment
+	LikeType string `json:"like_type" binding:"required" validate:"eq=1|eq=2"`
+	LikeId   int64  `json:"like_id,string" binding:"required"`
 }
 
 type LikeDelArgs struct {
-	LikeType string `json:"like_type" binding:"required"`
-	LikeId   int64  `json:"like_id" binding:"required"`
+	LikeType string `json:"like_type" binding:"required" validate:"eq=1|eq=2"`
+	LikeId   int64  `json:"like_id,string" binding:"required"`
 }

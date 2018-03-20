@@ -78,6 +78,11 @@ func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
 	return
 }
 
+func (u *User) SetUserLikeToMysql(like *model.UserLike) (err error) {
+	_, err = MysqlEngine.Insert(like)
+	return
+}
+
 //--------------------------------------------------//
 func (u *User) getUserRedisKey(userId int64) string {
 	return fmt.Sprintf(model.RedisKeyUser, userId)

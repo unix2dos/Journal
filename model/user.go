@@ -13,6 +13,6 @@ type User struct {
 
 type UserLike struct {
 	UserId    int64 `json:"user_id,string"`
-	JournalId int64 `json:"journal_id,string" default(0)`
-	CommentId int64 `json:"comment_id,string" default(0)`
+	JournalId int64 `json:"journal_id,string,omitempty" xorm:"default(0)"`
+	CommentId int64 `json:"comment_id,string,omitempty" xorm:"default(0)"`
 }
