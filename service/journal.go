@@ -141,7 +141,6 @@ func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err 
 	limit := 10
 
 	list = make([]*model.Journal, 0)
-
 	sql := "SELECT * FROM journal WHERE user_id != ? AND public = ? AND like_users NOT LIKE '%"
 	sql += strconv.FormatInt(userId, 10)
 	sql += "%'"
