@@ -5,6 +5,7 @@ import (
 	"Journal/utils"
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type Journal struct {
@@ -137,23 +138,23 @@ func (j *Journal) DelJournalFromMysqlAndRedis(journal *model.Journal) (err error
 }
 
 func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err error) {
-	limit := 3
+	limit := 10
 
 	list = make([]*model.Journal, 0)
 
-	MysqlEngine.SQL("SELECT * FROM journal WHERE user_id != ? AND public = ? "+
-		"ORDER BY like_count DESC, create_time DESC  LIMIT ?",
-		userId, "1",
-		limit,
-	).Find(&list)
+	sql := "SELECT * FROM journal WHERE user_id != ? AND public = ? AND like_users NOT LIKE '%"
+	sql += strconv.FormatInt(userId, 10)
+	sql += "%'"
+	sql += "ORDER BY LENGTH(like_users) DESC, create_time DESC  LIMIT ?"
+	MysqlEngine.SQL(sql, userId, "1", limit).Find(&list)
 
-	//不能是公开的
 	//不是自己的
-	//限制多少条
-	//优先点赞数量最多的
-	//优先最新的
+	//不能是公开的
+	//不是已经喜欢的
 
-	//TODO:优先不是已经喜欢的
+	//优先点赞数量
+	//优先最新的
+	//限制多少条
 	return
 }
 
