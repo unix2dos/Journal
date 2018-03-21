@@ -157,6 +157,17 @@ func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err 
 	return
 }
 
+func (j *Journal) GetJournalArchive(userId int64) (list []*model.Journal, err error) {
+
+	user, _, err := NewUser().GetUserById(userId)
+	if err != nil {
+		return
+	}
+
+	MysqlEngine.In("id", user.LikeJournals).Find(&list)
+	return
+}
+
 func (j *Journal) SetClientLikeInfo(userId int64, journal *model.Journal) {
 	journal.LikeByMe = utils.BoolToString(utils.IntContains(journal.LikeUsers, userId))
 	journal.LikeCount = int64(len(journal.LikeUsers))

@@ -335,5 +335,15 @@ func LikeDelete(c *gin.Context) {
 	//先看是否点过赞
 }
 func ArchiveGet(c *gin.Context) {
-
+	data := GetData(c)
+	list, err := journalService.GetJournalArchive(GetUid(c))
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("ArchiveGet err=%v", err)
+		return
+	}
+	for _, v := range list {
+		journalService.SetClientLikeInfo(GetUid(c), v)
+	}
+	data.Data["journals"] = list
 }

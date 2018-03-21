@@ -51,7 +51,7 @@ func Route(r *gin.Engine) {
 
 	archive := r.Group("/archive")
 	{
-		archive.POST("/get", ArchiveGet)
+		archive.GET("/get", ArchiveGet)
 	}
 
 }
