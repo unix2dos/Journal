@@ -2,6 +2,7 @@ package service
 
 import (
 	"Journal/model"
+	"Journal/utils"
 	"encoding/json"
 	"fmt"
 )
@@ -17,11 +18,6 @@ func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error
 
 	list = make([]*model.Journal, 0)
 	MysqlEngine.Where("user_id=?", userId).Find(&list)
-
-	//TODO: 加上 like_by_me,
-
-	//TODO: like_count
-
 	return
 }
 
@@ -159,6 +155,12 @@ func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err 
 
 	//TODO:优先不是已经喜欢的
 	return
+}
+
+func (j *Journal) SetClientLikeInfo(userId int64, journal *model.Journal) {
+	journal.LikeByMe = utils.BoolToString(utils.IntContains(journal.LikeUsers, userId))
+	journal.LikeCount = int64(len(journal.LikeUsers))
+	journal.LikeUsers = nil
 }
 
 //--------------------------------------------------//

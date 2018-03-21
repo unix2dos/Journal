@@ -106,6 +106,11 @@ func JournalList(c *gin.Context) {
 		service.Logs.Errorf("JournalList err=%v", err)
 		return
 	}
+
+	for _, v := range list {
+		journalService.SetClientLikeInfo(GetUid(c), v)
+	}
+
 	data.Data["journals"] = list
 }
 
@@ -181,6 +186,7 @@ func JournalUpdate(c *gin.Context) {
 		service.Logs.Errorf("JournalUpdate sql err=%v", err)
 		return
 	}
+	journalService.SetClientLikeInfo(GetUid(c), journal)
 	data.Data["journal"] = journal
 }
 
@@ -228,6 +234,9 @@ func JournalRecommend(c *gin.Context) {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalRecommend err=%v", err)
 		return
+	}
+	for _, v := range list {
+		journalService.SetClientLikeInfo(GetUid(c), v)
 	}
 	data.Data["journals"] = list
 }

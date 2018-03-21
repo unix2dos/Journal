@@ -22,8 +22,8 @@ type User struct {
 	Email    string `json:"email" xorm:"VARCHAR(50)"`
 	Password string `json:"-" xorm:"VARCHAR(50)"`
 
-	LikeJournals []int64 `json:"like_journals"`
-	LikeComments []int64 `json:"like_comments"`
+	LikeJournals []int64 `json:"like_journals,omitempty"`
+	LikeComments []int64 `json:"like_comments,omitempty"`
 
 	Create time.Time `json:"-" redis:"-" xorm:"created DATETIME"`
 	Update time.Time `json:"-" redis:"-" xorm:"updated DATETIME"`
@@ -36,7 +36,7 @@ type Journal struct {
 	Content    string  `json:"content" xorm:"Text"`
 	Public     string  `json:"public" xorm:"VARCHAR(20)"`
 	UserId     int64   `json:"user_id" xorm:"BIGINT(20)"`
-	LikeUsers  []int64 `json:"like_users"`
+	LikeUsers  []int64 `json:"like_users,omitempty"`
 	CreateTime Time    `json:"create_time"  xorm:"DATETIME"`
 	UpdateTime Time    `json:"update_time"  xorm:"DATETIME"`
 

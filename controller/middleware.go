@@ -84,6 +84,7 @@ func CommonReturn(c *gin.Context) {
 
 		user, exist, err := userService.GetUserById(GetUid(c))
 		if err == nil && exist {
+			user.LikeJournals = nil
 			data.Data["user"] = user
 		}
 

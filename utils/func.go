@@ -25,6 +25,13 @@ func IntContains(s []int64, e int64) bool {
 	return false
 }
 
+func BoolToString(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
+}
+
 func ScryptPassWord(pass string) string {
 	salt := []byte{0xc1, 0x08, 0xf2, 0x58, 0xa7, 0x6a, 0xad, 0x7b}
 	dk, err := scrypt.Key([]byte(pass), salt, 1<<15, 8, 1, 32)
