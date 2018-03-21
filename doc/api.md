@@ -66,8 +66,8 @@
 
 ####  /signup POST 注册
 
-字段|说明|
----|---|---
+字段|说明
+---|---
 alias| 昵称
 email| 邮箱
 password| 密码
@@ -90,8 +90,8 @@ password| 密码
 
 ####  /login POST 登录
 
-字段|说明|
----|---|---
+字段|说明
+---|---
 email | 邮箱
 password| 密码
 
