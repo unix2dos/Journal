@@ -1,5 +1,5 @@
+# 统一返回
 ### RetCode
-
 错误码
 
 ```
@@ -42,7 +42,7 @@
 		'data': {} （不同接口不一样）
 	 }
 ```
-### API 接口信息
+# API 接口信息
 
 
 ####  /getinfo GET 获取用户信息,有cookie直接返回
@@ -153,17 +153,180 @@ password| 密码
 }
 ```
 
-#### journal/add
-#### journal/update
-#### journal/delete
-#### journal/recommend
+#### journal/add POST 增加日志
+字段|说明
+---|---
+title | 标题
+content| 内容
+public|是否公开 "1" "0"
+
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "journal": {
+            "id": "196482399075307520",
+            "title": "e",
+            "content": "e",
+            "public": "1",
+            "user_id": 196474816105025536,
+            "create_time": "1521647942",
+            "update_time": "1521647942",
+            "like_count": "0",
+            "like_by_me": ""
+        },
+        "time": "1521647942",
+        "user": {
+            "id": "196474816105025536",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
+}
+```
+#### journal/update POST 修改日志
+字段|说明
+---|---
+id|日志id
+title | 标题
+content| 内容
+public|是否公开 "1" "0"
+
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "journal": {
+            "id": "196482399075307520",
+            "title": "555",
+            "content": "555",
+            "public": "0",
+            "user_id": 196474816105025536,
+            "create_time": "1521647942",
+            "update_time": "1521648020",
+            "like_count": "0",
+            "like_by_me": "0"
+        },
+        "time": "1521648020",
+        "user": {
+            "id": "196474816105025536",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
+}
+```
 
 
+#### journal/delete POST 删除日志
+字段|说明
+---|---
+id|日志id
 
-#### /like/add
-#### /like/delete
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "time": "1521648084",
+        "user": {
+            "id": "196474816105025536",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
+}
+```
+
+#### journal/recommend GET 获取推荐日志
+
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "journals": [
+            {
+                "id": "196473841453633536",
+                "title": "1->3",
+                "content": "3",
+                "public": "1",
+                "user_id": 196473692539064320,
+                "create_time": "1521645902",
+                "update_time": "1521646074",
+                "like_count": "1",
+                "like_by_me": "0"
+            },
+            {
+                "id": "196473821438414848",
+                "title": "1->2",
+                "content": "2",
+                "public": "1",
+                "user_id": 196473692539064320,
+                "create_time": "1521645897",
+                "update_time": "1521646061",
+                "like_count": "1",
+                "like_by_me": "0"
+            }
+        ],
+        "time": "1521648183",
+        "user": {
+            "id": "196483390575218688",
+            "alias": "13",
+            "email": "13@qq.com"
+        }
+    }
+}
+```
+
+#### /like/add POST 喜欢日志或喜欢评论
+
+字段|说明
+---|---
+like_type|喜欢类型 "1"->journal "2"->comment
+like_id|喜欢id
+
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "time": "1521648319",
+        "user": {
+            "id": "196483390575218688",
+            "alias": "13",
+            "email": "13@qq.com"
+        }
+    }
+}
+```
 
 
+#### /like/delete POST 删除日志或删除评论
+
+字段|说明
+---|---
+like_type|喜欢类型 "1"->journal "2"->comment
+like_id|喜欢id
+
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "time": "1521648319",
+        "user": {
+            "id": "196483390575218688",
+            "alias": "13",
+            "email": "13@qq.com"
+        }
+    }
+}
+```
+
+#TODO: 留言系统
 
 <!--留言系统
 
