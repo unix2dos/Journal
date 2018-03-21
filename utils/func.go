@@ -3,14 +3,22 @@ package utils
 import (
 	"encoding/base64"
 	"log"
-	"strings"
 
 	"golang.org/x/crypto/scrypt"
 )
 
-func StringContains(str string, arr []string) bool {
+func StringContains(arr []string, str string) bool {
 	for _, v := range arr {
-		if strings.Contains(str, v) {
+		if v == str {
+			return true
+		}
+	}
+	return false
+}
+
+func IntContains(s []int64, e int64) bool {
+	for _, a := range s {
+		if a == e {
 			return true
 		}
 	}

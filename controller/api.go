@@ -262,10 +262,10 @@ func LikeAdd(c *gin.Context) {
 	}
 
 	//是否可以点赞
-	userLike := new(model.UserLike)
+
 	if args.LikeType == "1" {
-		//判断是否有这个id
-		_, exist, err := journalService.GetJournalById(args.LikeId)
+		//判断是否有这个journal
+		journal, exist, err := journalService.GetJournalById(args.LikeId)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeAdd GetJournalById err=%v", err)
@@ -276,30 +276,36 @@ func LikeAdd(c *gin.Context) {
 			service.Logs.Errorf("LikeAdd ErrorJournalNotExist")
 			return
 		}
-		//判断是否点赞过
-		like, err := service.MysqlEngine.Where("user_id=?", GetUid(c)).And("journal_id=?", args.LikeId).Get(userLike)
-		if err != nil {
-			data.Ret = model.ErrorServe
-			service.Logs.Errorf("LikeAdd ErrorServe err=%v", err)
-			return
-		}
-		if like {
+		user, _, _ := userService.GetUserById(GetUid(c))
+
+		//判断用户是否点赞过
+		if utils.IntContains(journal.LikeUsers, GetUid(c)) ||
+			utils.IntContains(user.LikeJournals, args.LikeId) {
 			data.Ret = model.ErrorLikeAlready
 			service.Logs.Errorf("LikeAdd ErrorLikeAlready")
 			return
 		}
 
-		userLike.JournalId = args.LikeId
+		//添加到数据库
+		journal.LikeUsers = append(journal.LikeUsers, GetUid(c))
+		err = journalService.SetJournalToMysqlAndRedis(journal)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeAdd SetJournalToMysqlAndRedis err=%v", err)
+			return
+		}
+		//用户也要添加
+		user.LikeJournals = append(user.LikeJournals, args.LikeId)
+		err = userService.SetUserToMysqlAndRedis(user)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeAdd SetUserToMysqlAndRedis err=%v", err)
+			return
+		}
 
 	} else if args.LikeType == "2" {
 
-		//TODO:1111111111111
-		userLike.CommentId = args.LikeId
-
 	}
-
-	userLike.UserId = GetUid(c)
-	userService.SetUserLikeToMysql(userLike)
 
 }
 func LikeDelete(c *gin.Context) {

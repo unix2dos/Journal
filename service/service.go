@@ -77,7 +77,6 @@ func ConnectMysql() (err error) {
 	}
 	MysqlEngine.Sync2(
 		new(model.User),
-		new(model.UserLike),
 		new(model.Journal),
 		new(model.Comment),
 	)

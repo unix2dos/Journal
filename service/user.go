@@ -2,6 +2,7 @@ package service
 
 import (
 	"Journal/model"
+	"encoding/json"
 	"fmt"
 )
 
@@ -25,8 +26,14 @@ func (u *User) GetUserById(userId int64) (user *model.User, exist bool, err erro
 
 	if exist {
 		//从redis找
-		if err = RedisStore.HMGetStruct(key, user); err != nil {
-			Logs.Errorf("HMGetStruct userId=%d err=%v", userId, err)
+		var str string
+		str, err = RedisStore.Get(key)
+		if err != nil {
+			Logs.Errorf("HGET userId=%d err=%v", userId, err)
+			return
+		}
+		if err = json.Unmarshal([]byte(str), user); err != nil {
+			Logs.Errorf("HGET userId=%d err=%v", userId, err)
 			return
 		}
 		return user, true, nil
@@ -51,7 +58,8 @@ func (u *User) GetUserById(userId int64) (user *model.User, exist bool, err erro
 
 func (u *User) SetUserToReids(user *model.User) (err error) {
 	key := u.getUserRedisKey(user.Id)
-	return RedisStore.HMSet(key, user)
+	byte, _ := json.Marshal(user)
+	return RedisStore.Set(key, string(byte))
 }
 
 func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
@@ -75,12 +83,6 @@ func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
 	}
 
 	err = u.SetUserToReids(user)
-	return
-}
-
-//userLike
-func (u *User) SetUserLikeToMysql(like *model.UserLike) (err error) {
-	_, err = MysqlEngine.Insert(like)
 	return
 }
 

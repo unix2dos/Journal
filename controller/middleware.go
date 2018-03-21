@@ -35,7 +35,7 @@ func RequestLog(c *gin.Context) {
 
 func SessionFilter(c *gin.Context) {
 
-	if utils.StringContains(c.Request.RequestURI, NotSessionFilter) {
+	if utils.StringContains(NotSessionFilter, c.Request.RequestURI) {
 		return
 	}
 	data := GetData(c)
@@ -43,7 +43,7 @@ func SessionFilter(c *gin.Context) {
 	//没有cookie
 	if !ok {
 		service.Logs.Errorf("ErrorNotLogin1 userId=%d", userId)
-		data.Ret = model.ErrorNotLogin
+		data.Ret = model.ErrorUserNotExist
 		c.Abort()
 		return
 	}
@@ -60,7 +60,7 @@ func SessionFilter(c *gin.Context) {
 	if !exist {
 		c.Abort()
 		service.Logs.Errorf("ErrorNotLogin2 userId=%d", userId)
-		data.Ret = model.ErrorNotLogin
+		data.Ret = model.ErrorUserNotExist
 		return
 	}
 

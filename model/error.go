@@ -5,7 +5,7 @@ const (
 	ErrorArgs = iota //1
 	ErrorValidate
 
-	ErrorNotLogin
+	ErrorUserNotExist
 	ErrorRepeatSignUp
 	ErrorUserPassWord
 	ErrorJournalNotExist
@@ -21,7 +21,7 @@ var e = map[int]string{
 	ErrorArgs:     "error args",
 	ErrorValidate: "err validate",
 
-	ErrorNotLogin:        "not login",
+	ErrorUserNotExist:    "user not exist",
 	ErrorRepeatSignUp:    "email has sign up",
 	ErrorUserPassWord:    "email or password error",
 	ErrorJournalNotExist: "journal not exist",
