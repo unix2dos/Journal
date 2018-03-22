@@ -8,7 +8,8 @@ import (
 )
 
 func Route(r *gin.Engine) {
-	store, err := sessions.NewRedisStore(100, "tcp", model.AppConfig.RedisHost, model.AppConfig.RedisAuth, []byte("secret"))
+	//开启session
+	store, err := sessions.NewRedisStore(100, "tcp", model.AppConfig.RedisHost, model.AppConfig.RedisAuth, []byte("0x12"))
 	if err != nil {
 		panic(err)
 	}

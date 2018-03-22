@@ -11,6 +11,7 @@ const (
 	ErrorJournalNotExist
 	ErrorLikeAlready
 	ErrorLikeNotExist
+	ErrorCommentNotExist
 
 	ErrorServe = -1
 )
@@ -27,6 +28,7 @@ var e = map[int]string{
 	ErrorJournalNotExist: "journal not exist",
 	ErrorLikeAlready:     "already liked",
 	ErrorLikeNotExist:    "have not liked",
+	ErrorCommentNotExist: "comment not exist",
 }
 
 func GetDataMsg(code int) string {

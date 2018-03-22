@@ -289,10 +289,28 @@ func CommentAdd(c *gin.Context) {
 		return
 	}
 
+	//判断ReplyCommentId是否存在
+	if args.ReplyCommentId != 0 {
+		_, exist, err := CommentService.GetCommentById(args.ReplyCommentId)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("CommentAdd err=%v", err)
+			return
+		}
+
+		if !exist {
+			data.Ret = model.ErrorCommentNotExist
+			service.Logs.Errorf("CommentAdd not exist %v", args.ReplyCommentId)
+			return
+		}
+	}
+
 	comment := new(model.Comment)
 	comment.Id = service.GetSnowFlakeId()
-	comment.ReplyCommentId = args.ReplyCommentId
 	comment.Content = args.Comment
+	comment.ReplyCommentId = args.ReplyCommentId
+	comment.JournalId = args.JournalId
+	comment.UserId = GetUid(c)
 	comment.CreateTime = model.Time(time.Now())
 	comment.UpdateTime = model.Time(time.Now())
 
@@ -304,9 +322,11 @@ func CommentAdd(c *gin.Context) {
 
 	data.Data["comment"] = comment
 }
+
 func CommentUpdate(c *gin.Context) {
 
 }
+
 func CommentDelete(c *gin.Context) {
 
 }
