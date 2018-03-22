@@ -270,8 +270,6 @@ func LikeAdd(c *gin.Context) {
 		return
 	}
 
-	//是否可以点赞
-
 	if args.LikeType == "1" {
 		//判断是否有这个journal
 		journal, exist, err := journalService.GetJournalById(args.LikeId)
@@ -317,6 +315,7 @@ func LikeAdd(c *gin.Context) {
 	}
 
 }
+
 func LikeDelete(c *gin.Context) {
 	data := GetData(c)
 	args := new(model.LikeDelArgs)
@@ -332,7 +331,50 @@ func LikeDelete(c *gin.Context) {
 		return
 	}
 
-	//先看是否点过赞
+	if args.LikeType == "1" {
+		//判断是否有这个journal
+		journal, exist, err := journalService.GetJournalById(args.LikeId)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeDelete GetJournalById err=%v", err)
+			return
+		}
+		if !exist {
+			data.Ret = model.ErrorJournalNotExist
+			service.Logs.Errorf("LikeDelete ErrorJournalNotExist")
+			return
+		}
+		user, _, _ := userService.GetUserById(GetUid(c))
+
+		//判断用户是否点赞过
+		if !utils.IntContains(journal.LikeUsers, GetUid(c)) ||
+			!utils.IntContains(user.LikeJournals, args.LikeId) {
+			data.Ret = model.ErrorLikeNotExist
+			service.Logs.Errorf("LikeDelete ErrorLikeNotExist")
+			return
+		}
+
+		//TODO: 删除数据库
+		journal.LikeUsers = utils.SliceRemoveValue(journal.LikeUsers, GetUid(c))
+		err = journalService.SetJournalToMysqlAndRedis(journal)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeDelete SetJournalToMysqlAndRedis err=%v", err)
+			return
+		}
+		//TODO: 用户也要删除
+		user.LikeJournals = utils.SliceRemoveValue(user.LikeJournals, args.LikeId)
+		err = userService.SetUserToMysqlAndRedis(user)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeDelete SetUserToMysqlAndRedis err=%v", err)
+			return
+		}
+
+	} else if args.LikeType == "2" {
+
+	}
+
 }
 func ArchiveGet(c *gin.Context) {
 	data := GetData(c)
