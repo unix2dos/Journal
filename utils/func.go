@@ -42,6 +42,7 @@ func SliceRemoveValue(slice []int64, value int64) []int64 {
 			return SliceRemove(slice, k)
 		}
 	}
+	return slice
 }
 
 func ScryptPassWord(pass string) string {

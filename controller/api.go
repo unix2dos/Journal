@@ -285,8 +285,8 @@ func LikeAdd(c *gin.Context) {
 		}
 		user, _, _ := userService.GetUserById(GetUid(c))
 
-		//判断用户是否点赞过
-		if utils.IntContains(journal.LikeUsers, GetUid(c)) ||
+		//判断用户是否点赞过 这里用&& 防止数据不统一
+		if utils.IntContains(journal.LikeUsers, GetUid(c)) &&
 			utils.IntContains(user.LikeJournals, args.LikeId) {
 			data.Ret = model.ErrorLikeAlready
 			service.Logs.Errorf("LikeAdd ErrorLikeAlready")
@@ -346,15 +346,15 @@ func LikeDelete(c *gin.Context) {
 		}
 		user, _, _ := userService.GetUserById(GetUid(c))
 
-		//判断用户是否点赞过
-		if !utils.IntContains(journal.LikeUsers, GetUid(c)) ||
+		//判断用户是否点赞过, 这里用&& 防止数据不统一
+		if !utils.IntContains(journal.LikeUsers, GetUid(c)) &&
 			!utils.IntContains(user.LikeJournals, args.LikeId) {
 			data.Ret = model.ErrorLikeNotExist
 			service.Logs.Errorf("LikeDelete ErrorLikeNotExist")
 			return
 		}
 
-		//TODO: 删除数据库
+		//删除数据库
 		journal.LikeUsers = utils.SliceRemoveValue(journal.LikeUsers, GetUid(c))
 		err = journalService.SetJournalToMysqlAndRedis(journal)
 		if err != nil {
@@ -362,7 +362,7 @@ func LikeDelete(c *gin.Context) {
 			service.Logs.Errorf("LikeDelete SetJournalToMysqlAndRedis err=%v", err)
 			return
 		}
-		//TODO: 用户也要删除
+		//用户也要删除
 		user.LikeJournals = utils.SliceRemoveValue(user.LikeJournals, args.LikeId)
 		err = userService.SetUserToMysqlAndRedis(user)
 		if err != nil {

@@ -103,8 +103,12 @@ func (j *Journal) SetJournalToMysqlAndRedis(journal *model.Journal) (err error) 
 		session.Close()
 	}()
 
+	if journal.LikeUsers == nil {
+		journal.LikeUsers = []int64{}
+	}
 	_, err = session.Insert(journal)
 	if err != nil {
+		session = session.MustCols("like_users")
 		_, err = session.ID(journal.Id).Update(journal)
 		if err != nil {
 			return

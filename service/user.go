@@ -74,8 +74,15 @@ func (u *User) SetUserToMysqlAndRedis(user *model.User) (err error) {
 		session.Close()
 	}()
 
+	if user.LikeJournals == nil {
+		user.LikeJournals = []int64{}
+	}
+	if user.LikeComments == nil {
+		user.LikeComments = []int64{}
+	}
 	_, err = session.Insert(user)
 	if err != nil { //insert错误, update一下, 如果update也错误,彻底错误
+		session = session.MustCols("like_journals").MustCols("like_comments")
 		_, err = session.ID(user.Id).Update(user)
 		if err != nil {
 			return
