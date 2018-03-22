@@ -49,7 +49,7 @@ func SessionFilter(c *gin.Context) {
 	}
 
 	//有cookie
-	user, exist, err := userService.GetUserById(userId)
+	user, exist, err := UserService.GetUserById(userId)
 	if err != nil {
 		c.Abort()
 		service.Logs.Errorf("ErrorServe userId=%d err=%v", userId, err)
@@ -82,7 +82,7 @@ func CommonReturn(c *gin.Context) {
 
 	if data.Ret == model.Success {
 
-		user, exist, err := userService.GetUserById(GetUid(c))
+		user, exist, err := UserService.GetUserById(GetUid(c))
 		if err == nil && exist {
 			user.LikeJournals = nil
 			data.Data["user"] = user

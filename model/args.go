@@ -39,3 +39,21 @@ type LikeDelArgs struct {
 	LikeType string `json:"like_type" binding:"required" validate:"eq=1|eq=2"`
 	LikeId   int64  `json:"like_id,string" binding:"required"`
 }
+
+type CommentListArgs struct {
+	JournalId int64 `json:"journal_id,string" binding:"required"`
+}
+
+type CommentAddArgs struct {
+	JournalId      int64  `json:"journal_id,string" binding:"required"`
+	Comment        string `json:"comment" binding:"required"`
+	ReplyCommentId int64  `json:"reply_comment_id,string"`
+}
+
+type CommentUpdateArgs struct {
+	CommentId int64 `json:"comment_id,string"`
+}
+
+type CommentDeleteArgs struct {
+	CommentId int64 `json:"comment_id,string"`
+}

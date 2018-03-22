@@ -47,7 +47,7 @@ func Signup(c *gin.Context) {
 	user.Alias = args.Alias
 	user.Email = args.Email
 	user.Password = utils.ScryptPassWord(args.Password)
-	err := userService.SetUserToMysqlAndRedis(user)
+	err := UserService.SetUserToMysqlAndRedis(user)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("Signup err=%v", err)
@@ -100,7 +100,7 @@ func Login(c *gin.Context) {
 func JournalList(c *gin.Context) {
 	data := GetData(c)
 
-	list, err := journalService.GetJournalList(GetUid(c))
+	list, err := JournalService.GetJournalList(GetUid(c))
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalList err=%v", err)
@@ -108,7 +108,7 @@ func JournalList(c *gin.Context) {
 	}
 
 	for _, v := range list {
-		journalService.SetClientLikeInfo(GetUid(c), v)
+		JournalService.SetClientLikeInfo(GetUid(c), v)
 	}
 
 	data.Data["journals"] = list
@@ -138,7 +138,7 @@ func JournalAdd(c *gin.Context) {
 	journal.CreateTime = model.Time(time.Now())
 	journal.UpdateTime = model.Time(time.Now())
 
-	if err := journalService.SetJournalToMysqlAndRedis(journal); err != nil {
+	if err := JournalService.SetJournalToMysqlAndRedis(journal); err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalAdd sql err=%v", err)
 		return
@@ -164,7 +164,7 @@ func JournalUpdate(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetUserJournalById(GetUid(c), id)
+	journal, exist, err := JournalService.GetUserJournalById(GetUid(c), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalUpdate err=%v", err)
@@ -181,12 +181,12 @@ func JournalUpdate(c *gin.Context) {
 	journal.Title = args.Title
 	journal.Content = args.Content
 	journal.UpdateTime = model.Time(time.Now())
-	if err := journalService.SetJournalToMysqlAndRedis(journal); err != nil {
+	if err := JournalService.SetJournalToMysqlAndRedis(journal); err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalUpdate sql err=%v", err)
 		return
 	}
-	journalService.SetClientLikeInfo(GetUid(c), journal)
+	JournalService.SetClientLikeInfo(GetUid(c), journal)
 	data.Data["journal"] = journal
 }
 
@@ -207,7 +207,7 @@ func JournalDel(c *gin.Context) {
 
 	//先看journal是否存在
 	id, _ := strconv.ParseInt(args.Id, 10, 64)
-	journal, exist, err := journalService.GetUserJournalById(GetUid(c), id)
+	journal, exist, err := JournalService.GetUserJournalById(GetUid(c), id)
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalDel err=%v", err)
@@ -220,7 +220,7 @@ func JournalDel(c *gin.Context) {
 		return
 	}
 
-	if err := journalService.DelJournalFromMysqlAndRedis(journal); err != nil {
+	if err := JournalService.DelJournalFromMysqlAndRedis(journal); err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalDel sql err=%v", err)
 		return
@@ -229,24 +229,80 @@ func JournalDel(c *gin.Context) {
 
 func JournalRecommend(c *gin.Context) {
 	data := GetData(c)
-	list, err := journalService.GetJournalRecommend(GetUid(c))
+	list, err := JournalService.GetJournalRecommend(GetUid(c))
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("JournalRecommend err=%v", err)
 		return
 	}
 	for _, v := range list {
-		journalService.SetClientLikeInfo(GetUid(c), v)
+		JournalService.SetClientLikeInfo(GetUid(c), v)
 	}
 	data.Data["journals"] = list
 }
 
 func CommentList(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.CommentListArgs)
+	if err := c.BindQuery(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("CommentList err=%v", err)
+		return
+	}
 
+	//先看journal是否存在
+	_, exist, err := JournalService.GetJournalById(args.JournalId)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("CommentList err=%v", err)
+		return
+	}
+
+	if !exist {
+		data.Ret = model.ErrorJournalNotExist
+		service.Logs.Errorf("CommentList not exist %v", args.JournalId)
+		return
+	}
+
+	list, err := CommentService.GetCommentList(args.JournalId)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("GetCommentList err=%v", err)
+		return
+	}
+
+	data.Data["comments"] = list
 }
 
 func CommentAdd(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.CommentAddArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("CommentAdd err=%v", err)
+		return
+	}
 
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("CommentAdd validate err=%v", err)
+		return
+	}
+
+	comment := new(model.Comment)
+	comment.Id = service.GetSnowFlakeId()
+	comment.ReplyCommentId = args.ReplyCommentId
+	comment.Content = args.Comment
+	comment.CreateTime = model.Time(time.Now())
+	comment.UpdateTime = model.Time(time.Now())
+
+	if err := CommentService.SetCommentToMysqlAndRedis(comment); err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("CommentAdd sql err=%v", err)
+		return
+	}
+
+	data.Data["comment"] = comment
 }
 func CommentUpdate(c *gin.Context) {
 
@@ -272,7 +328,7 @@ func LikeAdd(c *gin.Context) {
 
 	if args.LikeType == "1" {
 		//判断是否有这个journal
-		journal, exist, err := journalService.GetJournalById(args.LikeId)
+		journal, exist, err := JournalService.GetJournalById(args.LikeId)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeAdd GetJournalById err=%v", err)
@@ -283,7 +339,7 @@ func LikeAdd(c *gin.Context) {
 			service.Logs.Errorf("LikeAdd ErrorJournalNotExist")
 			return
 		}
-		user, _, _ := userService.GetUserById(GetUid(c))
+		user, _, _ := UserService.GetUserById(GetUid(c))
 
 		//判断用户是否点赞过 这里用&& 防止数据不统一
 		if utils.IntContains(journal.LikeUsers, GetUid(c)) &&
@@ -295,7 +351,7 @@ func LikeAdd(c *gin.Context) {
 
 		//添加到数据库
 		journal.LikeUsers = append(journal.LikeUsers, GetUid(c))
-		err = journalService.SetJournalToMysqlAndRedis(journal)
+		err = JournalService.SetJournalToMysqlAndRedis(journal)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeAdd SetJournalToMysqlAndRedis err=%v", err)
@@ -303,7 +359,7 @@ func LikeAdd(c *gin.Context) {
 		}
 		//用户也要添加
 		user.LikeJournals = append(user.LikeJournals, args.LikeId)
-		err = userService.SetUserToMysqlAndRedis(user)
+		err = UserService.SetUserToMysqlAndRedis(user)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeAdd SetUserToMysqlAndRedis err=%v", err)
@@ -333,7 +389,7 @@ func LikeDelete(c *gin.Context) {
 
 	if args.LikeType == "1" {
 		//判断是否有这个journal
-		journal, exist, err := journalService.GetJournalById(args.LikeId)
+		journal, exist, err := JournalService.GetJournalById(args.LikeId)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeDelete GetJournalById err=%v", err)
@@ -344,7 +400,7 @@ func LikeDelete(c *gin.Context) {
 			service.Logs.Errorf("LikeDelete ErrorJournalNotExist")
 			return
 		}
-		user, _, _ := userService.GetUserById(GetUid(c))
+		user, _, _ := UserService.GetUserById(GetUid(c))
 
 		//判断用户是否点赞过, 这里用&& 防止数据不统一
 		if !utils.IntContains(journal.LikeUsers, GetUid(c)) &&
@@ -356,7 +412,7 @@ func LikeDelete(c *gin.Context) {
 
 		//删除数据库
 		journal.LikeUsers = utils.SliceRemoveValue(journal.LikeUsers, GetUid(c))
-		err = journalService.SetJournalToMysqlAndRedis(journal)
+		err = JournalService.SetJournalToMysqlAndRedis(journal)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeDelete SetJournalToMysqlAndRedis err=%v", err)
@@ -364,7 +420,7 @@ func LikeDelete(c *gin.Context) {
 		}
 		//用户也要删除
 		user.LikeJournals = utils.SliceRemoveValue(user.LikeJournals, args.LikeId)
-		err = userService.SetUserToMysqlAndRedis(user)
+		err = UserService.SetUserToMysqlAndRedis(user)
 		if err != nil {
 			data.Ret = model.ErrorServe
 			service.Logs.Errorf("LikeDelete SetUserToMysqlAndRedis err=%v", err)
@@ -376,16 +432,17 @@ func LikeDelete(c *gin.Context) {
 	}
 
 }
+
 func ArchiveGet(c *gin.Context) {
 	data := GetData(c)
-	list, err := journalService.GetJournalArchive(GetUid(c))
+	list, err := JournalService.GetJournalArchive(GetUid(c))
 	if err != nil {
 		data.Ret = model.ErrorServe
 		service.Logs.Errorf("ArchiveGet err=%v", err)
 		return
 	}
 	for _, v := range list {
-		journalService.SetClientLikeInfo(GetUid(c), v)
+		JournalService.SetClientLikeInfo(GetUid(c), v)
 	}
 	data.Data["journals"] = list
 }

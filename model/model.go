@@ -10,4 +10,5 @@ var (
 	RedisKeyPrefix  string = "journal"
 	RedisKeyUser    string = RedisKeyPrefix + ":user:%d"
 	RedisKeyJournal string = RedisKeyPrefix + ":journal:%d"
+	RedisKeyComment string = RedisKeyPrefix + ":comment:%d"
 )

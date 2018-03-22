@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	userService    = service.NewUser()
-	journalService = service.NewJournal()
+	UserService    = service.NewUser()
+	JournalService = service.NewJournal()
+	CommentService = service.NewComment()
 
 	NotSessionFilter = []string{
 		"/signup",

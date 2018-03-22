@@ -16,7 +16,6 @@ func NewJournal() *Journal {
 }
 
 func (j *Journal) GetJournalList(userId int64) (list []*model.Journal, err error) {
-
 	list = make([]*model.Journal, 0)
 	MysqlEngine.Where("user_id=?", userId).Find(&list)
 	return
