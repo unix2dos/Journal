@@ -51,9 +51,10 @@ type CommentAddArgs struct {
 }
 
 type CommentUpdateArgs struct {
-	CommentId int64 `json:"comment_id,string"`
+	CommentId int64  `json:"comment_id,string" binding:"required"`
+	Comment   string `json:"comment" binding:"required"`
 }
 
 type CommentDeleteArgs struct {
-	CommentId int64 `json:"comment_id,string"`
+	CommentId int64 `json:"comment_id,string" binding:"required"`
 }

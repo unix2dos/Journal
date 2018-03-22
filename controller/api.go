@@ -271,6 +271,7 @@ func CommentList(c *gin.Context) {
 		return
 	}
 
+	//TODO: 这里可能修改
 	data.Data["comments"] = list
 }
 
@@ -324,7 +325,43 @@ func CommentAdd(c *gin.Context) {
 }
 
 func CommentUpdate(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.CommentUpdateArgs)
 
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("CommentUpdate err=%v", err)
+		return
+	}
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("CommentUpdate validate err=%v", err)
+		return
+	}
+
+	//判断commentId是否存在
+	comment, exist, err := CommentService.GetCommentById(args.CommentId)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("CommentUpdate err=%v", err)
+		return
+	}
+
+	if !exist {
+		data.Ret = model.ErrorCommentNotExist
+		service.Logs.Errorf("CommentUpdate not exist %v", args.CommentId)
+		return
+	}
+
+	comment.Content = args.Comment
+	comment.UpdateTime = model.Time(time.Now())
+	if err := CommentService.SetCommentToMysqlAndRedis(comment); err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("CommentUpdate sql err=%v", err)
+		return
+	}
+
+	data.Data["comment"] = comment
 }
 
 func CommentDelete(c *gin.Context) {
