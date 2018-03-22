@@ -339,7 +339,7 @@ func CommentUpdate(c *gin.Context) {
 		return
 	}
 
-	//判断commentId是否存在
+	//判断comment是否存在
 	comment, exist, err := CommentService.GetCommentById(args.CommentId)
 	if err != nil {
 		data.Ret = model.ErrorServe
@@ -365,7 +365,39 @@ func CommentUpdate(c *gin.Context) {
 }
 
 func CommentDelete(c *gin.Context) {
+	data := GetData(c)
+	args := new(model.CommentDeleteArgs)
+	if err := c.BindJSON(args); err != nil {
+		data.Ret = model.ErrorArgs
+		service.Logs.Errorf("CommentDelete err=%v", err)
+		return
+	}
 
+	if err := service.Validate.Struct(args); err != nil {
+		data.Ret = model.ErrorValidate
+		service.Logs.Errorf("CommentDelete validate err=%v", err)
+		return
+	}
+
+	//先看comment是否存在
+	comment, exist, err := CommentService.GetCommentById(args.CommentId)
+	if err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("CommentDelete err=%v", err)
+		return
+	}
+
+	if !exist {
+		data.Ret = model.ErrorCommentNotExist
+		service.Logs.Errorf("CommentDelete not exist %v", args.CommentId)
+		return
+	}
+
+	if err := CommentService.DelCommentFromMysqlAndRedis(comment); err != nil {
+		data.Ret = model.ErrorServe
+		service.Logs.Errorf("JournalDel sql err=%v", err)
+		return
+	}
 }
 
 func LikeAdd(c *gin.Context) {
