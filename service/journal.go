@@ -161,7 +161,7 @@ func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err 
 }
 
 func (j *Journal) GetJournalArchive(userId int64) (list []*model.Journal, err error) {
-
+	list = make([]*model.Journal, 0)
 	user, _, err := NewUser().GetUserById(userId)
 	if err != nil {
 		return

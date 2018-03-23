@@ -12,6 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//TODO: journalDel commentDel 删除, 用户表里也应该删除相对应的, 应该是用户自己处理
+
 func GetInfo(c *gin.Context) {
 }
 
