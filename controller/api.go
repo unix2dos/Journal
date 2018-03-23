@@ -430,33 +430,82 @@ func LikeAdd(c *gin.Context) {
 		}
 		user, _, _ := UserService.GetUserById(GetUid(c))
 
-		//判断用户是否点赞过 这里用&& 防止数据不统一
-		if utils.IntContains(journal.LikeUsers, GetUid(c)) &&
-			utils.IntContains(user.LikeJournals, args.LikeId) {
+		//判断用户是否点赞过
+		isJournal := utils.IntContains(journal.LikeUsers, GetUid(c))
+		isUser := utils.IntContains(user.LikeJournals, args.LikeId)
+		if isJournal && isUser { //这里用&& 防止数据不统一
 			data.Ret = model.ErrorLikeAlready
 			service.Logs.Errorf("LikeAdd ErrorLikeAlready")
 			return
 		}
 
 		//添加到数据库
-		journal.LikeUsers = append(journal.LikeUsers, GetUid(c))
-		err = JournalService.SetJournalToMysqlAndRedis(journal)
-		if err != nil {
-			data.Ret = model.ErrorServe
-			service.Logs.Errorf("LikeAdd SetJournalToMysqlAndRedis err=%v", err)
-			return
+		if !isJournal {
+			journal.LikeUsers = append(journal.LikeUsers, GetUid(c))
+			err = JournalService.SetJournalToMysqlAndRedis(journal)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeAdd SetJournalToMysqlAndRedis err=%v", err)
+				return
+			}
 		}
+
 		//用户也要添加
-		user.LikeJournals = append(user.LikeJournals, args.LikeId)
-		err = UserService.SetUserToMysqlAndRedis(user)
-		if err != nil {
-			data.Ret = model.ErrorServe
-			service.Logs.Errorf("LikeAdd SetUserToMysqlAndRedis err=%v", err)
-			return
+		if !isUser {
+			user.LikeJournals = append(user.LikeJournals, args.LikeId)
+			err = UserService.SetUserToMysqlAndRedis(user)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeAdd SetUserToMysqlAndRedis err=%v", err)
+				return
+			}
 		}
 
 	} else if args.LikeType == "2" {
+		//判断是否有这个comment
+		comment, exist, err := CommentService.GetCommentById(args.LikeId)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeAdd GetCommentById err=%v", err)
+			return
+		}
+		if !exist {
+			data.Ret = model.ErrorCommentNotExist
+			service.Logs.Errorf("LikeAdd ErrorCommentNotExist")
+			return
+		}
+		user, _, _ := UserService.GetUserById(GetUid(c))
 
+		//判断用户是否点赞过
+		isComment := utils.IntContains(comment.LikeUsers, GetUid(c))
+		isUser := utils.IntContains(user.LikeComments, args.LikeId)
+		if isComment && isUser { //这里用&& 防止数据不统一
+			data.Ret = model.ErrorLikeAlready
+			service.Logs.Errorf("LikeAdd ErrorLikeAlready")
+			return
+		}
+
+		//添加到数据库
+		if !isComment {
+			comment.LikeUsers = append(comment.LikeUsers, GetUid(c))
+			err = CommentService.SetCommentToMysqlAndRedis(comment)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeAdd SetCommentToMysqlAndRedis err=%v", err)
+				return
+			}
+		}
+
+		//用户也要添加
+		if !isUser {
+			user.LikeComments = append(user.LikeComments, args.LikeId)
+			err = UserService.SetUserToMysqlAndRedis(user)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeAdd SetUserToMysqlAndRedis err=%v", err)
+				return
+			}
+		}
 	}
 
 }
@@ -491,33 +540,82 @@ func LikeDelete(c *gin.Context) {
 		}
 		user, _, _ := UserService.GetUserById(GetUid(c))
 
-		//判断用户是否点赞过, 这里用&& 防止数据不统一
-		if !utils.IntContains(journal.LikeUsers, GetUid(c)) &&
-			!utils.IntContains(user.LikeJournals, args.LikeId) {
+		//判断用户是否点赞过
+		isJournal := utils.IntContains(journal.LikeUsers, GetUid(c))
+		isUser := utils.IntContains(user.LikeJournals, args.LikeId)
+		if !isJournal && !isUser { //这里用&& 防止数据不统一
 			data.Ret = model.ErrorLikeNotExist
 			service.Logs.Errorf("LikeDelete ErrorLikeNotExist")
 			return
 		}
 
 		//删除数据库
-		journal.LikeUsers = utils.SliceRemoveValue(journal.LikeUsers, GetUid(c))
-		err = JournalService.SetJournalToMysqlAndRedis(journal)
-		if err != nil {
-			data.Ret = model.ErrorServe
-			service.Logs.Errorf("LikeDelete SetJournalToMysqlAndRedis err=%v", err)
-			return
+		if isJournal {
+			journal.LikeUsers = utils.SliceRemoveValue(journal.LikeUsers, GetUid(c))
+			err = JournalService.SetJournalToMysqlAndRedis(journal)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeDelete SetJournalToMysqlAndRedis err=%v", err)
+				return
+			}
 		}
+
 		//用户也要删除
-		user.LikeJournals = utils.SliceRemoveValue(user.LikeJournals, args.LikeId)
-		err = UserService.SetUserToMysqlAndRedis(user)
-		if err != nil {
-			data.Ret = model.ErrorServe
-			service.Logs.Errorf("LikeDelete SetUserToMysqlAndRedis err=%v", err)
-			return
+		if isUser {
+			user.LikeJournals = utils.SliceRemoveValue(user.LikeJournals, args.LikeId)
+			err = UserService.SetUserToMysqlAndRedis(user)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeDelete SetUserToMysqlAndRedis err=%v", err)
+				return
+			}
 		}
 
 	} else if args.LikeType == "2" {
+		//判断是否有这个comment
+		comment, exist, err := CommentService.GetCommentById(args.LikeId)
+		if err != nil {
+			data.Ret = model.ErrorServe
+			service.Logs.Errorf("LikeDelete GetCommentById err=%v", err)
+			return
+		}
+		if !exist {
+			data.Ret = model.ErrorCommentNotExist
+			service.Logs.Errorf("LikeDelete ErrorCommentNotExist")
+			return
+		}
+		user, _, _ := UserService.GetUserById(GetUid(c))
 
+		//判断用户是否点赞过
+		isComment := utils.IntContains(comment.LikeUsers, GetUid(c))
+		isUser := utils.IntContains(user.LikeComments, args.LikeId)
+		if !isComment && !isUser { //这里用&& 防止数据不统一
+			data.Ret = model.ErrorLikeNotExist
+			service.Logs.Errorf("LikeDelete ErrorLikeNotExist")
+			return
+		}
+
+		//删除数据库
+		if isComment {
+			comment.LikeUsers = utils.SliceRemoveValue(comment.LikeUsers, GetUid(c))
+			err = CommentService.SetCommentToMysqlAndRedis(comment)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeDelete SetCommentToMysqlAndRedis err=%v", err)
+				return
+			}
+		}
+
+		//用户也要删除
+		if isUser {
+			user.LikeComments = utils.SliceRemoveValue(user.LikeComments, args.LikeId)
+			err = UserService.SetUserToMysqlAndRedis(user)
+			if err != nil {
+				data.Ret = model.ErrorServe
+				service.Logs.Errorf("LikeDelete SetUserToMysqlAndRedis err=%v", err)
+				return
+			}
+		}
 	}
 
 }
