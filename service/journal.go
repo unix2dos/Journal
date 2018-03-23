@@ -140,6 +140,13 @@ func (j *Journal) DelJournalFromMysqlAndRedis(journal *model.Journal) (err error
 	return
 }
 
+//不是自己的
+//不能是公开的
+//不是已经喜欢的
+
+//优先点赞数量
+//优先最新的
+//限制多少条
 func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err error) {
 	limit := 10
 
@@ -150,13 +157,6 @@ func (j *Journal) GetJournalRecommend(userId int64) (list []*model.Journal, err 
 	sql += "ORDER BY LENGTH(like_users) DESC, create_time DESC  LIMIT ?"
 	MysqlEngine.SQL(sql, userId, "1", limit).Find(&list)
 
-	//不是自己的
-	//不能是公开的
-	//不是已经喜欢的
-
-	//优先点赞数量
-	//优先最新的
-	//限制多少条
 	return
 }
 
@@ -173,7 +173,7 @@ func (j *Journal) GetJournalArchive(userId int64) (list []*model.Journal, err er
 
 func (j *Journal) SetClientLikeInfo(userId int64, journal *model.Journal) {
 	journal.LikeByMe = utils.BoolToString(utils.IntContains(journal.LikeUsers, userId))
-	journal.LikeCount = int64(len(journal.LikeUsers))
+	journal.LikeCount = strconv.Itoa(len(journal.LikeUsers))
 	journal.LikeUsers = nil
 }
 

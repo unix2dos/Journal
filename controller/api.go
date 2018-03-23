@@ -271,7 +271,7 @@ func CommentList(c *gin.Context) {
 		return
 	}
 
-	//TODO: 这里可能修改
+	CommentService.SetClientAlias(list)
 	data.Data["comments"] = list
 }
 
@@ -308,7 +308,7 @@ func CommentAdd(c *gin.Context) {
 
 	comment := new(model.Comment)
 	comment.Id = service.GetSnowFlakeId()
-	comment.Content = args.Comment
+	comment.Content = args.Content
 	comment.ReplyCommentId = args.ReplyCommentId
 	comment.JournalId = args.JournalId
 	comment.UserId = GetUid(c)
@@ -321,6 +321,7 @@ func CommentAdd(c *gin.Context) {
 		return
 	}
 
+	CommentService.SetClientAlias([]*model.Comment{comment})
 	data.Data["comment"] = comment
 }
 
@@ -353,7 +354,7 @@ func CommentUpdate(c *gin.Context) {
 		return
 	}
 
-	comment.Content = args.Comment
+	comment.Content = args.Content
 	comment.UpdateTime = model.Time(time.Now())
 	if err := CommentService.SetCommentToMysqlAndRedis(comment); err != nil {
 		data.Ret = model.ErrorServe
@@ -361,6 +362,7 @@ func CommentUpdate(c *gin.Context) {
 		return
 	}
 
+	CommentService.SetClientAlias([]*model.Comment{comment})
 	data.Data["comment"] = comment
 }
 

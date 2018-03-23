@@ -4,6 +4,7 @@ import (
 	"Journal/model"
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type Comment struct {
@@ -13,8 +14,61 @@ func NewComment() *Comment {
 	return &Comment{}
 }
 
+//把user_id 换成  user_alias
+//把 ReplyCommentId 找到 commit_id, commit_id找到user_id, user_id再换成user_alias
+//把user_id 置空
+//把ReplyCommentId 置空
+func (c *Comment) SetClientAlias(list []*model.Comment) {
+
+	if len(list) <= 0 {
+		return
+	}
+	userMap := make(map[int64]string, 0)
+	replyMap := make(map[int64]string, 0)
+
+	//加上用户名
+	var userIds string
+	for _, v := range list {
+		userIds += strconv.Itoa(int(v.UserId)) + ","
+	}
+	userIds = userIds[:len(userIds)-1]
+	aliases, _ := MysqlEngine.SQL("SELECT id, alias FROM user WHERE id in (" + userIds + ")").QueryString()
+	for _, v := range aliases {
+		id, _ := strconv.ParseInt(v["id"], 10, 64)
+		userMap[id] = v["alias"]
+	}
+
+	for _, v := range list {
+		v.UserAlias = userMap[v.UserId]
+		v.UserId = 0
+	}
+
+	//加上回复者用户名 TODO: 可以做个优化, 没有ReplyCommentId不走这个
+	var replyIds string
+	for _, v := range list {
+		replyIds += strconv.Itoa(int(v.ReplyCommentId)) + ","
+	}
+	replyIds = replyIds[:len(replyIds)-1]
+
+	sql := "SELECT a.alias,b.id FROM USER AS a RIGHT JOIN"
+	sql += "(SELECT id,user_id FROM COMMENT WHERE id IN ("
+	sql += replyIds
+	sql += ")) AS b "
+	sql += "ON a.id=b.user_id"
+
+	aliases, _ = MysqlEngine.SQL(sql).QueryString()
+	for _, v := range aliases {
+		id, _ := strconv.ParseInt(v["id"], 10, 64)
+		replyMap[id] = v["alias"]
+	}
+	for _, v := range list {
+		v.ReplyUserAlias = replyMap[v.ReplyCommentId]
+		v.ReplyCommentId = 0
+	}
+}
+
 func (c *Comment) GetCommentList(journalId int64) (list []*model.Comment, err error) {
-	list = make([]*model.Comment, 0) //TODO: 要排序
+	list = make([]*model.Comment, 0)
 	MysqlEngine.Where("journal_id=?", journalId).Find(&list)
 	return
 }
