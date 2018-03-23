@@ -244,6 +244,7 @@ func JournalRecommend(c *gin.Context) {
 }
 
 func CommentList(c *gin.Context) {
+	//TODO: 可以增加仅支持仅自己和作者可以看到评论
 	data := GetData(c)
 	args := new(model.CommentListArgs)
 	if err := c.BindQuery(args); err != nil {
@@ -278,6 +279,7 @@ func CommentList(c *gin.Context) {
 }
 
 func CommentAdd(c *gin.Context) {
+	//TODO: 可以增加只有点赞了才能评论功能
 	data := GetData(c)
 	args := new(model.CommentAddArgs)
 	if err := c.BindJSON(args); err != nil {

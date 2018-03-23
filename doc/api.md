@@ -326,126 +326,115 @@ like_id|喜欢id
 }
 ```
 
-#TODO: 留言系统
+### /comment/list GET 获取单个日志评论列表
 
-<!--留言系统
+字段|说明
+---|---
+JournalId|日志id  例如: /comment/list?JournalId=xxxxxxx
 
-十二.comment/add
-Method: POST (journal_id [int], content)
-journal_id: 从journal/list 或 journal/recommend 里获取
-content {
-	“text”: 字符串
+```
+{
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "comments": [
+            {
+                "id": "197193699036237824",
+                "content": "i am a comment",
+                "journal_id": "197193667373436928",
+                "create_time": "1521817529",
+                "update_time": "1521817529",
+                "user_alias": "2"
+            }
+        ],
+        "time": "1521817573",
+        "user": {
+            "id": "197188279152414720",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
 }
-Success:
+```
+
+
+### /comment/add POST 增加评论
+
+字段|说明
+---|---
+journal_id|日志id
+content|评论内容
+`reply_comment_id`| 回复评论的id, 默认是0
+
+```
 {
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': comment id
- }
-
-十三.comment/addreply （回应别人的留言）
-Method: POST (journal_id [int], content, target_user_id[int])
-journal_id: 从comment/get 里获取 
-target_user_id: 从comment/get 里获取
-content: 同十二
- 
-Success:
-{
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': comment id
- }
-
-十四. comment/update
-Method: Post (comment_id [int], content)
-comment_id: 每个comment(留言）都有一个unique id, 从comment/get 里获取 
-content: 同十二
-
-Success:
-{
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': {}
- }
-
-
-十五. comment/get/jid=<jid> 列出对应journal的所有相关留言。如果是journal 作者，列出所有留言。如果是旁人（我），列出journal 作者公开留言(journal作者使用comment/add), 和journal作者回复我的留言（journal 作者使用comment/addreply, 其中target_user_id 是我的user_id),以及我对该journal的所有留言
-Method: Get
-jid: journal id, 从journal/list 或 journal/recommend 里获取
-
-Success:
-{
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': list of comment
- }
-comment {
-'content': 同十二    	'id': 留言id    	'journal_id': 留言所属journal 的id，    	'misc': 暂时没用，    	'target_user_id': {None (用comment/add 提交的留言) 或者是user id (用comment/addreply 提交的留言)},    	'user_id': 留言作者,
-'timestamp_create',
-'timestamp_update'}
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "comment": {
+            "id": "197193699036237824",
+            "content": "i am a comment",
+            "journal_id": "197193667373436928",
+            "create_time": "1521817529",
+            "update_time": "1521817529",
+            "user_alias": "2"
+        },
+        "time": "1521817529",
+        "user": {
+            "id": "197188279152414720",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
 }
+```
 
+### /comment/update
+字段|说明
+---|---
+comment_id|评论id
+content|评论内容
 
-十六. comment/delete
-Method: Post (comment_id)
-Success:
+```
 {
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': {}
- }
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "comment": {
+            "id": "197193699036237824",
+            "content": "modify content",
+            "journal_id": "197193667373436928",
+            "create_time": "1521817529",
+            "update_time": "1521817637",
+            "user_alias": "2"
+        },
+        "time": "1521817637",
+        "user": {
+            "id": "197188279152414720",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
+}
+```
 
 
+### /comment/delete
+字段|说明
+---|---
+comment_id|评论id
 
-点赞系统
-
-十七. like/get/jid=<jid>&cid=<cid>
-Method: Get
-jid: journal_id 从journal list 获取
-cid: comment_id 从 comment/get 获取
-jid 和 cid 其中一个是-1. 比如我想点赞journal 3, jid=3, cid = -1。 如果我想点赞journal 3 下面 comment 2, jid=-1, cid = 2。
-Success:
+```
 {
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': {‘like_count': 这的journal/comment 的总赞数，
-’i_like': 我有没有点赞， 0 是没有， 1是有,
-'likeList‘: list of like 
- }
-like {comment_id, journal_id, id, user_id}
-
-十八. like/add
-method: Post(journal_id, comment_id) 原理同上
-Success:
-{
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': {}
- }
-
-十九.like/delete
-method: Post(like_id) 每个like entry 都有自己的id, 可以从like/get 获取
-Success:
-{
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': {}
- }
-
-二十.archive/get (list of 我点赞了的journals）
-method: Get
-Success:
-{
-        'ret': CODE_SUCCESS,
-        'msg': MSG_SUCCESS,
-        'data': list of journals
- }
-journal 结构同七
-
-注，点赞系统的一个重要环节在于给别人journal点赞了才能进行留言。我设想这个功能由前端实现。 前端可以通过like/get 判断journals 是不是被我点赞了，从而决定显示 留言功能。-->
-
-
-
-
-
-
+    "ret": 0,
+    "msg": "success",
+    "data": {
+        "time": "1521817677",
+        "user": {
+            "id": "197188279152414720",
+            "alias": "2",
+            "email": "2@qq.com"
+        }
+    }
+}
+```
