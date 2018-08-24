@@ -1,12 +1,12 @@
 package main
 
 import (
-	"Journal/controller"
-	"Journal/model"
-	"Journal/service"
-	"Journal/utils"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/unix2dos/Journal/controller"
+	"github.com/unix2dos/Journal/model"
+	"github.com/unix2dos/Journal/service"
+	"github.com/unix2dos/Journal/utils"
 )
 
 func init() {

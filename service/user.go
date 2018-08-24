@@ -1,9 +1,10 @@
 package service
 
 import (
-	"Journal/model"
 	"encoding/json"
 	"fmt"
+
+	"github.com/unix2dos/Journal/model"
 )
 
 type User struct {

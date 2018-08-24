@@ -1,17 +1,17 @@
 package controller
 
 import (
-	"Journal/model"
-	"Journal/service"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"time"
 
-	"Journal/utils"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/unix2dos/Journal/model"
+	"github.com/unix2dos/Journal/service"
+	"github.com/unix2dos/Journal/utils"
 )
 
 func RequestLog(c *gin.Context) {

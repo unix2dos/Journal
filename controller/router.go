@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"Journal/model"
-
-	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+
+	"github.com/unix2dos/Journal/model"
 )
 
 func Route(r *gin.Engine) {

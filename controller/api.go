@@ -1,15 +1,14 @@
 package controller
 
 import (
-	"Journal/model"
-	"Journal/service"
-	"Journal/utils"
-
+	"strconv"
 	"time"
 
-	"strconv"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/unix2dos/Journal/model"
+	"github.com/unix2dos/Journal/service"
+	"github.com/unix2dos/Journal/utils"
 )
 
 //TODO: journalDel commentDel 删除, 用户表里也应该删除相对应的, 应该是用户自己处理

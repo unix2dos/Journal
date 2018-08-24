@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"Journal/model"
-
-	"Journal/service"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+
+	"github.com/unix2dos/Journal/model"
+	"github.com/unix2dos/Journal/service"
 )
 
 var (

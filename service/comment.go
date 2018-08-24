@@ -1,10 +1,11 @@
 package service
 
 import (
-	"Journal/model"
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/unix2dos/Journal/model"
 )
 
 type Comment struct {

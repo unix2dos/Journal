@@ -1,11 +1,12 @@
 package service
 
 import (
-	"Journal/model"
-	"Journal/utils"
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/unix2dos/Journal/model"
+	"github.com/unix2dos/Journal/utils"
 )
 
 type Journal struct {

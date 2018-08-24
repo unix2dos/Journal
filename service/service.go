@@ -1,16 +1,16 @@
 package service
 
 import (
-	"Journal/model"
 	"io/ioutil"
-
-	"Journal/utils"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
 	"github.com/zheng-ji/goSnowFlake"
 	"gopkg.in/go-playground/validator.v8"
+
+	"github.com/unix2dos/Journal/model"
+	"github.com/unix2dos/Journal/utils"
 )
 
 var (

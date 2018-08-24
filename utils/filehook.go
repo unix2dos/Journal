@@ -1,20 +1,14 @@
 package utils
 
 import (
-	"os"
-	"path/filepath"
-
-	"fmt"
-
-	"time"
-
-	"runtime"
-
 	"bufio"
-
+	"fmt"
+	"os"
 	"os/signal"
-
+	"path/filepath"
+	"runtime"
 	"syscall"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
