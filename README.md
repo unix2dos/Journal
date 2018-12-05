@@ -27,16 +27,3 @@ most doc in https://github.com/unix2dos/Journal/tree/master/doc
     -- service	//app功能支持
 
     -- utils	//工具
-
-
-### log
-https://github.com/sirupsen/logrus
-
-### json
-https://github.com/json-iterator/go
-
-### validator
-https://github.com/go-playground/validator
-
-### redis
-https://github.com/garyburd/redigo/
